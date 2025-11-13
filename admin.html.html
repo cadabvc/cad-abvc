@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin CAD ABVC</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.28.0/dist/supabase.min.js"></script>
+</head>
+<body>
+<h2>Login Admin</h2>
+<form id="loginForm">
+<label>Email:</label><input type="email" id="emailAdmin" required>
+<label>Senha:</label><input type="password" id="senhaAdmin" required>
+<button type="button" onclick="login()">Entrar</button>
+</form>
+<div id="adminContent" style="display:none">
+<h2>Painel Admin</h2>
+<button onclick="carregarDispensas()">Ver Dispensas</button>
+<button onclick="carregarRecibos()">Ver Recibos</button>
+<div id="listaAdmin"></div>
+</div>
+
+<script>
+const supabaseUrl = 'https://prwhifyewscielsopluj.supabase.co';
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJIUzI1NiIsInJlZiI6InByd2hpZnlld3NjaWVsc29wbHVqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjMwMzA2MzEsImV4cCI6MjA3ODYwNjYzMX0.N8Op_2iUwRFd71YTninoztaInQtVLEnVIwbi2nIHkKg';
+const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+
+async function login(){
+const email=document.getElementById('emailAdmin').value;
+const senha=document.getElementById('senhaAdmin').value;
+const { data, error } = await supabase.auth.signInWithPassword({email,password:senha});
+if(error){ alert('Erro login: '+error.message); return;}
+document.getElementById('loginForm').style.display='none';
+document.getElementById('adminContent').style.display='block';
+}
+
+async function carregarDispensas(){
+const { data, error } = await supabase.from('dispensa').select('*');
+if(error){ alert(error.message); return; }
+const div=document.getElementById('listaAdmin');
+div.innerHTML='<h3>Dispensas</h3><pre>'+JSON.stringify(data,null,2)+'</pre>';
+}
+
+async function carregarRecibos(){
+const { data, error } = await supabase.from('recibos').select('*');
+if(error){ alert(error.message); return; }
+const div=document.getElementById('listaAdmin');
+div.innerHTML+='<h3>Recibos</h3><pre>'+JSON.stringify(data,null,2)+'</pre>';
+}
+</script>
+</body>
+</html>
