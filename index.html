@@ -6,11 +6,18 @@
 <title>CAD ABVC - Conselho de Arbitragem de Viana do Castelo</title>
 <style>
 body { margin:0; font-family: Arial, sans-serif; background:#fff; color:#000;}
+/* Header */
+header { width:100%; height:120px; background:#333; display:flex; justify-content:center; align-items:center; }
+header img { max-height:100%; object-fit:contain; display:block; }
+/* Menu */
 nav { display:flex; justify-content:center; gap:1rem; background:#444; }
 nav a { color:#fff; text-decoration:none; font-weight:bold; padding:1rem; cursor:pointer;}
+nav a:hover { background:#555; }
+/* Seções */
 section { display:none; padding:1rem; }
 section.active { display:block; }
 .home-img { width:100%; max-height:none; object-fit:contain; margin-top:10px; }
+/* Formulários e tabelas */
 form { background:#f8f8f8; padding:1rem; border-radius:8px; margin-bottom:1rem; }
 label { display:block; margin-top:0.5rem; }
 input, select, textarea { width:100%; padding:0.5rem; margin-top:0.3rem; }
@@ -18,13 +25,26 @@ button { margin-top:0.5rem; padding:0.5rem 1rem; cursor:pointer; }
 table { width:100%; border-collapse: collapse; table-layout: fixed; }
 th, td { border:1px solid #ccc; padding:0.5rem; text-align:center; word-wrap:break-word;}
 .total { font-weight:bold; }
+/* Rodapé */
 footer { background:#333; color:#fff; padding:0.5rem 1rem; display:flex; justify-content:space-between; align-items:center; font-size:0.9rem;}
 footer a { color:#fff; text-decoration:none; }
 </style>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.28.0/dist/supabase.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  // Conexão Supabase
+  const supabaseUrl = "https://prwhifyewscielsopluj.supabase.co";
+  const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InByd2hpZnlld3NjaWVsc29wbHVqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjMwMzA2MzEsImV4cCI6MjA3ODYwNjYzMX0.N8Op_2iUwRFd71YTninoztaInQtVLEnVIwbi2nIHkKg";
+  const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+</script>
 </head>
 <body>
 
+<!-- Header -->
+<header>
+<img src="header.png" alt="Header ABVC">
+</header>
+
+<!-- Menu -->
 <nav>
 <a onclick="showSection('home')">Home</a>
 <a onclick="showSection('dispensas')">Dispensas</a>
@@ -34,8 +54,9 @@ footer a { color:#fff; text-decoration:none; }
 <a onclick="showSection('contactos')">Contactos</a>
 </nav>
 
+<!-- Seções -->
 <section id="home" class="active">
-<img src="abvc_cad.png" alt="AB Viana do Castelo" class="home-img">
+<img src="cad_abvc.png" alt="AB Viana do Castelo" class="home-img">
 <h2>Bem-vindo ao CAD ABVC</h2>
 <p>Use o menu acima para navegar pelas seções.</p>
 </section>
@@ -55,7 +76,6 @@ footer a { color:#fff; text-decoration:none; }
 <label>Motivo:</label><textarea id="motivoDispensa"></textarea>
 <button type="button" onclick="enviarDispensa()">Enviar Dispensa</button>
 </form>
-<div id="listaDispensas"></div>
 </section>
 
 <section id="recibos">
@@ -64,23 +84,30 @@ footer a { color:#fff; text-decoration:none; }
 <label>Nº do Jogo:</label><input type="text" id="numeroJogo" required>
 <table>
 <tr><th>Cargo</th><th>Nome</th><th>Prémio (€)</th><th>Deslocação (€)</th><th>Diversos (€)</th><th>Total (€)</th></tr>
-<tr><td>Árbitro Principal</td><td><input type="text" class="nome"></td><td><input type="text" class="premio"></td><td><input type="text" class="deslocacao"></td><td><input type="text" class="diversos"></td><td class="total">0,00</td></tr>
-<tr><td>Árbitro Auxiliar</td><td><input type="text" class="nome"></td><td><input type="text" class="premio"></td><td><input type="text" class="deslocacao"></td><td><input type="text" class="diversos"></td><td class="total">0,00</td></tr>
-<tr><td>Marcador</td><td><input type="text" class="nome"></td><td><input type="text" class="premio"></td><td><input type="text" class="deslocacao"></td><td><input type="text" class="diversos"></td><td class="total">0,00</td></tr>
-<tr><td>Operador 24"</td><td><input type="text" class="nome"></td><td><input type="text" class="premio"></td><td><input type="text" class="deslocacao"></td><td><input type="text" class="diversos"></td><td class="total">0,00</td></tr>
-<tr><td>Cronometrista</td><td><input type="text" class="nome"></td><td><input type="text" class="premio"></td><td><input type="text" class="deslocacao"></td><td><input type="text" class="diversos"></td><td class="total">0,00</td></tr>
+<tr>
+<td>Árbitro Principal</td><td><input type="text" class="nome"></td><td><input type="text" class="premio"></td><td><input type="text" class="deslocacao"></td><td><input type="text" class="diversos"></td><td class="total">0,00</td>
+</tr>
+<tr>
+<td>Árbitro Auxiliar</td><td><input type="text" class="nome"></td><td><input type="text" class="premio"></td><td><input type="text" class="deslocacao"></td><td><input type="text" class="diversos"></td><td class="total">0,00</td>
+</tr>
+<tr>
+<td>Marcador</td><td><input type="text" class="nome"></td><td><input type="text" class="premio"></td><td><input type="text" class="deslocacao"></td><td><input type="text" class="diversos"></td><td class="total">0,00</td>
+</tr>
+<tr>
+<td>Operador 24"</td><td><input type="text" class="nome"></td><td><input type="text" class="premio"></td><td><input type="text" class="deslocacao"></td><td><input type="text" class="diversos"></td><td class="total">0,00</td>
+</tr>
+<tr>
+<td>Cronometrista</td><td><input type="text" class="nome"></td><td><input type="text" class="premio"></td><td><input type="text" class="deslocacao"></td><td><input type="text" class="diversos"></td><td class="total">0,00</td>
+</tr>
 </table>
 <h3>Total Geral (€): <span id="totalGeral">0,00</span></h3>
-<label>Upload Recibo (PDF ou Imagem):</label>
-<input type="file" id="ficheiroRecibo">
 <button type="button" onclick="enviarRecibo()">Enviar Recibo</button>
 </form>
-<div id="listaRecibos"></div>
 </section>
 
 <section id="comunicados">
 <h2>Comunicados</h2>
-<div id="listaComunicados"></div>
+<p>Lista de comunicados aparecerá aqui.</p>
 </section>
 
 <section id="calendario">
@@ -105,79 +132,76 @@ footer a { color:#fff; text-decoration:none; }
 </footer>
 
 <script>
-// Supabase
-const supabaseUrl = 'https://prwhifyewscielsopluj.supabase.co';
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InByd2hpZnlld3NjaWVsc29wbHVqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjMwMzA2MzEsImV4cCI6MjA3ODYwNjYzMX0.N8Op_2iUwRFd71YTninoztaInQtVLEnVIwbi2nIHkKg';
-const supabase = supabase.createClient(supabaseUrl, supabaseKey);
-
+// Navegação entre seções
 function showSection(id){
-document.querySelectorAll('section').forEach(s=>s.classList.remove('active'));
-document.getElementById(id).classList.add('active');
+  document.querySelectorAll('section').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
 }
 
-// Atualizar totais com vírgula
+// Totais dos recibos
 function atualizarTotais(){
-let totalGeral=0;
-const rows=document.querySelectorAll('#recibos table tr');
-rows.forEach((r,i)=>{
-if(i===0) return;
-const premio=parseFloat(r.querySelector('.premio').value.replace(',','.'))||0;
-const desloc=parseFloat(r.querySelector('.deslocacao').value.replace(',','.'))||0;
-const diversos=parseFloat(r.querySelector('.diversos').value.replace(',','.'))||0;
-const total=premio+desloc+diversos;
-r.querySelector('.total').textContent=total.toFixed(2).replace('.',',');
-totalGeral+=total;
-});
-document.getElementById('totalGeral').textContent=totalGeral.toFixed(2).replace('.',',');
+  let totalGeral=0;
+  const rows=document.querySelectorAll('#recibos table tr');
+  rows.forEach((r,i)=>{
+    if(i===0) return;
+    const premio=parseFloat(r.querySelector('.premio').value.replace(',','.'))||0;
+    const desloc=parseFloat(r.querySelector('.deslocacao').value.replace(',','.'))||0;
+    const diversos=parseFloat(r.querySelector('.diversos').value.replace(',','.'))||0;
+    const total=premio+desloc+diversos;
+    r.querySelector('.total').textContent=total.toFixed(2).replace('.',',');
+    totalGeral+=total;
+  });
+  document.getElementById('totalGeral').textContent=totalGeral.toFixed(2).replace('.',',');
 }
 
+// Adicionar eventos para atualizar totais
 document.querySelectorAll('#recibos table tr').forEach((r,i)=>{
-if(i===0) return;
-['.premio','.deslocacao','.diversos'].forEach(cls=>{
-r.querySelector(cls).addEventListener('input', atualizarTotais);
-});
+  if(i===0) return;
+  ['.premio','.deslocacao','.diversos'].forEach(cls=>{
+    r.querySelector(cls).addEventListener('input', atualizarTotais);
+  });
 });
 
-// Envio para Supabase
+// Envio Dispensas para Supabase
 async function enviarDispensa(){
-const nome=document.getElementById('nomeDispensa').value;
-const data=document.getElementById('dataDispensa').value;
-const periodo=document.getElementById('periodoDispensa').value;
-const motivo=document.getElementById('motivoDispensa').value;
-const { error } = await supabase.from('dispensa').insert([{nome,data,periodo,motivo}]);
-if(error) alert('Erro ao enviar: '+error.message);
-else alert('Dispensa enviada com sucesso!');
+  const nome=document.getElementById('nomeDispensa').value;
+  const data=document.getElementById('dataDispensa').value;
+  const periodo=document.getElementById('periodoDispensa').value;
+  const motivo=document.getElementById('motivoDispensa').value;
+  const { error } = await supabase.from('dispensa').insert([{nome,data,periodo,motivo}]);
+  if(error) alert('Erro: '+error.message); else alert('Dispensa enviada!');
+  document.getElementById('dispensaForm').reset();
 }
 
-async function enviarRecibo(){
-const numeroJogo=document.getElementById('numeroJogo').value;
-const arbitros=[...document.querySelectorAll('#recibos table tr')].slice(1).map(r=>({
-nome:r.querySelector('.nome').value,
-premio:r.querySelector('.premio').value,
-deslocacao:r.querySelector('.deslocacao').value,
-diversos:r.querySelector('.diversos').value,
-total:r.querySelector('.total').textContent
-}));
-const ficheiro=document.getElementById('ficheiroRecibo').files[0];
-let ficheiroUrl=null;
-if(ficheiro){
-const { data, error } = await supabase.storage.from('recibos').upload('public/'+ficheiro.name, ficheiro);
-if(error){ alert('Erro upload ficheiro: '+error.message); return;}
-const { data: urlData } = supabase.storage.from('recibos').getPublicUrl('public/'+ficheiro.name);
-ficheiroUrl=urlData.publicUrl;
-}
-const { error } = await supabase.from('recibos').insert([{numeroJogo,arbitros,ficheiroUrl}]);
-if(error) alert('Erro ao enviar: '+error.message);
-else alert('Recibo enviado com sucesso!');
+// Envio Recibos para Supabase
+async function enviarRecibo() {
+  const numeroJogo = document.getElementById('numeroJogo').value;
+  const tbody = document.querySelectorAll('#recibos table tr');
+  const arbitros = [];
+  tbody.forEach((r,i)=>{
+    if(i===0) return;
+    arbitros.push({
+      cargo: r.cells[0].textContent,
+      nome: r.querySelector('.nome').value,
+      premio: r.querySelector('.premio').value.replace(',','.'),
+      deslocacao: r.querySelector('.deslocacao').value.replace(',','.'),
+      diversos: r.querySelector('.diversos').value.replace(',','.'),
+      total: r.querySelector('.total').textContent.replace(',','.')
+    });
+  });
+  const { data, error } = await supabase.from('recibos').insert([{ numero_jogo: numeroJogo, arbitros }]);
+  if(error){ alert('Erro: '+error.message); console.error(error); }
+  else{ alert('Recibo enviado!'); document.getElementById('reciboForm').reset(); tbody.forEach((r,i)=>{if(i!==0) r.querySelectorAll('input').forEach(inp=>inp.value=''); r.cells[5].textContent='0,00';}); document.getElementById('totalGeral').textContent='0,00'; }
 }
 
-// Envio de email
+// Envio email
 function enviarEmail(){
-const email=document.getElementById('emailRemetente').value;
-const assunto=document.getElementById('assuntoEmail').value;
-const msg=document.getElementById('mensagemEmail').value;
-window.location.href=`mailto:arbitragem.abvc@gmail.com?subject=${encodeURIComponent(assunto)}&body=${encodeURIComponent("De: "+email+"\n\n"+msg)}`;
+  const email=document.getElementById('emailRemetente').value;
+  const assunto=document.getElementById('assuntoEmail').value;
+  const msg=document.getElementById('mensagemEmail').value;
+  window.location.href=`mailto:arbitragem.abvc@gmail.com?subject=${encodeURIComponent(assunto)}&body=${encodeURIComponent("De: "+email+"\n\n"+msg)}`;
 }
 </script>
+
 </body>
 </html>
