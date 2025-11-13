@@ -3,37 +3,69 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CAD ABVC - Conselho de Arbitragem de Viana do Castelo</title>
+  <title>AB Viana do Castelo - Conselho de Arbitragem</title>
   <style>
-    body { font-family: Arial, sans-serif; margin: 0; padding: 0; background: #f8f9fa; color: #333; }
-    header { background: #003366; color: white; padding: 1rem; text-align: center; }
-    nav { display: flex; justify-content: center; gap: 1rem; background: #004080; padding: 0.5rem; }
+    body { margin: 0; font-family: Arial, sans-serif; background: #f8f9fa; color: #333; }
+    
+    /* LANDING PAGE */
+    .landing {
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      height: 100vh; background: #003366; color: white; text-align: center;
+    }
+    .landing img {
+      width: 250px; height: auto; margin-bottom: 1rem; border-radius: 8px;
+    }
+    .landing h1 { font-size: 2.5rem; margin: 0; }
+    .landing h2 { font-size: 1.5rem; margin: 0.5rem 0 2rem 0; }
+    .landing button {
+      padding: 0.7rem 2rem; font-size: 1rem; border: none; border-radius: 5px;
+      background: #ffcc00; color: #003366; cursor: pointer; font-weight: bold;
+    }
+    .landing button:hover { background: #ffaa00; }
+
+    /* SITE PRINCIPAL */
+    header { display: none; text-align: center; padding: 1rem; background: #003366; color: white; }
+    nav { display: none; justify-content: center; gap: 1rem; background: #004080; padding: 0.5rem; }
     nav a { color: white; text-decoration: none; font-weight: bold; }
-    section { padding: 1rem; display: none; }
+
+    section { display: none; padding: 1rem; }
     section.active { display: block; }
+
     form { background: white; padding: 1rem; border-radius: 8px; box-shadow: 0 0 5px rgba(0,0,0,0.1); }
     label { display: block; margin-top: 0.5rem; font-weight: bold; }
     input, select, textarea { width: 100%; padding: 0.5rem; margin-top: 0.3rem; border: 1px solid #ccc; border-radius: 4px; }
-    button { margin-top: 1rem; padding: 0.5rem 1rem; background: #003366; color: white; border: none; border-radius: 4px; cursor: pointer; }
-    button:hover { background: #0055aa; }
+    button.form-btn { margin-top: 1rem; padding: 0.5rem 1rem; background: #003366; color: white; border: none; border-radius: 4px; cursor: pointer; }
+    button.form-btn:hover { background: #0055aa; }
+
     table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
     th, td { border: 1px solid #ddd; padding: 0.5rem; text-align: center; }
     th { background: #003366; color: white; }
   </style>
 </head>
 <body>
-  <header>
+
+  <!-- LANDING PAGE -->
+  <div class="landing" id="landingPage">
+    <img src="https://cdn-icons-png.flaticon.com/512/2910/2910760.png" alt="Apito de Arbitragem">
+    <h1>AB Viana do Castelo</h1>
+    <h2>Conselho de Arbitragem</h2>
+    <button onclick="entrarSite()">Entrar no Site</button>
+  </div>
+
+  <!-- SITE PRINCIPAL -->
+  <header id="siteHeader">
     <h1>CAD ABVC - Conselho de Arbitragem de Viana do Castelo</h1>
   </header>
-  <nav>
+  <nav id="siteNav">
     <a href="#" onclick="showSection('dispensas')">Dispensas</a>
     <a href="#" onclick="showSection('recibos')">Recibos</a>
     <a href="#" onclick="showSection('comunicados')">Comunicados</a>
+    <a href="#" onclick="showSection('calendario')">Calendário</a>
     <a href="#" onclick="showSection('admin')">Admin</a>
   </nav>
 
   <!-- DISPENSAS -->
-  <section id="dispensas" class="active">
+  <section id="dispensas">
     <h2>Registo de Dispensas</h2>
     <form id="dispensaForm">
       <label>Nome:</label>
@@ -53,8 +85,8 @@
       <label>Motivo (opcional):</label>
       <textarea id="motivoDispensa" rows="3"></textarea>
 
-      <button type="button" onclick="guardarDispensa()">Guardar</button>
-      <button type="button" onclick="exportarDispensas()">Exportar CSV</button>
+      <button type="button" class="form-btn" onclick="guardarDispensa()">Guardar</button>
+      <button type="button" class="form-btn" onclick="exportarDispensas()">Exportar CSV</button>
     </form>
     <div id="listaDispensas"></div>
   </section>
@@ -70,7 +102,7 @@
       <table>
         <thead>
           <tr>
-            <th>Função</th>
+            <th>Cargo</th>
             <th>Nome</th>
             <th>Prémio (€)</th>
             <th>Deslocação (€)</th>
@@ -79,6 +111,46 @@
           </tr>
         </thead>
         <tbody id="tabelaArbitros">
+          <tr>
+            <td>Árbitro Principal</td>
+            <td><input type="text" class="nome"></td>
+            <td><input type="number" class="premio" min="0" step="0.01"></td>
+            <td><input type="number" class="deslocacao" min="0" step="0.01"></td>
+            <td><input type="number" class="diversos" min="0" step="0.01"></td>
+            <td class="total">0.00</td>
+          </tr>
+          <tr>
+            <td>Árbitro Auxiliar</td>
+            <td><input type="text" class="nome"></td>
+            <td><input type="number" class="premio" min="0" step="0.01"></td>
+            <td><input type="number" class="deslocacao" min="0" step="0.01"></td>
+            <td><input type="number" class="diversos" min="0" step="0.01"></td>
+            <td class="total">0.00</td>
+          </tr>
+          <tr>
+            <td>Marcador</td>
+            <td><input type="text" class="nome"></td>
+            <td><input type="number" class="premio" min="0" step="0.01"></td>
+            <td><input type="number" class="deslocacao" min="0" step="0.01"></td>
+            <td><input type="number" class="diversos" min="0" step="0.01"></td>
+            <td class="total">0.00</td>
+          </tr>
+          <tr>
+            <td>Operador 24”</td>
+            <td><input type="text" class="nome"></td>
+            <td><input type="number" class="premio" min="0" step="0.01"></td>
+            <td><input type="number" class="deslocacao" min="0" step="0.01"></td>
+            <td><input type="number" class="diversos" min="0" step="0.01"></td>
+            <td class="total">0.00</td>
+          </tr>
+          <tr>
+            <td>Cronometrista</td>
+            <td><input type="text" class="nome"></td>
+            <td><input type="number" class="premio" min="0" step="0.01"></td>
+            <td><input type="number" class="deslocacao" min="0" step="0.01"></td>
+            <td><input type="number" class="diversos" min="0" step="0.01"></td>
+            <td class="total">0.00</td>
+          </tr>
         </tbody>
       </table>
 
@@ -87,8 +159,8 @@
       <label>Upload do Recibo (PDF ou imagem):</label>
       <input type="file" id="ficheiroRecibo" accept=".pdf,.jpg,.png">
 
-      <button type="button" onclick="guardarRecibo()">Guardar Recibo</button>
-      <button type="button" onclick="exportarRecibos()">Exportar CSV</button>
+      <button type="button" class="form-btn" onclick="guardarRecibo()">Guardar Recibo</button>
+      <button type="button" class="form-btn" onclick="exportarRecibos()">Exportar CSV</button>
     </form>
     <div id="listaRecibos"></div>
   </section>
@@ -99,13 +171,20 @@
     <div id="listaComunicados"></div>
   </section>
 
+  <!-- CALENDÁRIO -->
+  <section id="calendario">
+    <h2>Calendário de Jogos</h2>
+    <iframe src="https://www.fpb.pt/calendario/associacao_17/?associacao=17&epoca=2025/2026&" 
+            width="100%" height="800" style="border:1px solid #ccc;"></iframe>
+  </section>
+
   <!-- ADMIN -->
   <section id="admin">
     <h2>Administração</h2>
     <form id="loginForm">
       <label>Senha:</label>
       <input type="password" id="senhaAdmin">
-      <button type="button" onclick="loginAdmin()">Entrar</button>
+      <button type="button" class="form-btn" onclick="loginAdmin()">Entrar</button>
     </form>
     <div id="adminPainel" style="display:none">
       <h3>Novo Comunicado</h3>
@@ -113,11 +192,19 @@
       <input type="text" id="tituloComunicado">
       <label>Mensagem:</label>
       <textarea id="mensagemComunicado" rows="4"></textarea>
-      <button type="button" onclick="publicarComunicado()">Publicar</button>
+      <button type="button" class="form-btn" onclick="publicarComunicado()">Publicar</button>
     </div>
   </section>
 
   <script>
+    // LANDING PAGE
+    function entrarSite(){
+      document.getElementById('landingPage').style.display = 'none';
+      document.getElementById('siteHeader').style.display = 'block';
+      document.getElementById('siteNav').style.display = 'flex';
+      showSection('dispensas');
+    }
+
     function showSection(id) {
       document.querySelectorAll('section').forEach(s => s.classList.remove('active'));
       document.getElementById(id).classList.add('active');
@@ -155,14 +242,6 @@
     const recList = JSON.parse(localStorage.getItem('recibos')||'[]');
     const tbody = document.getElementById('tabelaArbitros');
 
-    const funcoesArbitros = ['Árbitro Principal','Árbitro Auxiliar','Marcador','Operador 24"','Cronometrista'];
-
-    funcoesArbitros.forEach(funcao => {
-      const r = tbody.insertRow();
-      r.innerHTML = `<td>${funcao}</td><td><input type='text' class='nome'></td><td><input type='number' class='premio' min='0' step='0.01'></td><td><input type='number' class='deslocacao' min='0' step='0.01'></td><td><input type='number' class='diversos' min='0' step='0.01'></td><td class='total'>0.00</td>`;
-      r.querySelectorAll('input').forEach(inp=>inp.addEventListener('input', atualizarTotais));
-    });
-
     function atualizarTotais(){
       let totalGeral = 0;
       [...tbody.rows].forEach(r=>{
@@ -176,11 +255,12 @@
       document.getElementById('totalGeral').textContent = totalGeral.toFixed(2);
     }
 
+    tbody.querySelectorAll('input').forEach(inp=>inp.addEventListener('input', atualizarTotais));
+
     function guardarRecibo(){
       const numeroJogo = document.getElementById('numeroJogo').value;
       const ficheiro = document.getElementById('ficheiroRecibo').files[0];
       const arbitros = [...tbody.rows].map(r=>({
-        funcao: r.cells[0].textContent,
         nome:r.querySelector('.nome').value,
         premio:r.querySelector('.premio').value,
         deslocacao:r.querySelector('.deslocacao').value,
@@ -197,10 +277,10 @@
     }
 
     function exportarRecibos(){
-      let csv = 'Nº Jogo,Função,Nome,Prémio,Deslocação,Diversos,Total\n';
+      let csv = 'Nº Jogo,Nome,Prémio,Deslocação,Diversos,Total\n';
       recList.forEach(r=>{
         r.arbitros.forEach(a=>{
-          csv += `${r.numeroJogo},${a.funcao},${a.nome},${a.premio},${a.deslocacao},${a.diversos},${a.total}\n`;
+          csv += `${r.numeroJogo},${a.nome},${a.premio},${a.deslocacao},${a.diversos},${a.total}\n`;
         });
       });
       const blob = new Blob([csv],{type:'text/csv'});
@@ -209,7 +289,7 @@
       a.href = url; a.download='recibos.csv'; a.click();
     }
 
-    // ADMIN & COMUNICADOS
+    // COMUNICADOS
     const comunicados = JSON.parse(localStorage.getItem('comunicados')||'[]');
     renderComunicados();
 
@@ -236,5 +316,6 @@
       div.innerHTML = comunicados.map(c=>`<div style='background:#fff;padding:1rem;margin:.5rem 0;border-radius:8px;box-shadow:0 0 5px #ccc;'><h4>${c.titulo}</h4><p>${c.mensagem}</p><small>${c.data}</small></div>`).join('');
     }
   </script>
+
 </body>
 </html>
