@@ -1,143 +1,149 @@
 <!DOCTYPE html>
 <html lang="pt">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CAD ABVC - Conselho de Arbitragem</title>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CAD ABVC - Envio de Documentos</title>
+  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
   <style>
-    body { font-family: Arial, sans-serif; margin:0; background:#fff; color:#000; }
-    nav { display:flex; justify-content:space-around; background:#000; color:#fff; padding:15px; }
-    nav a { color:#fff; text-decoration:none; font-weight:bold; }
-    nav a:hover { text-decoration:underline; }
-
-    .section { display:none; padding:30px; }
-    .active { display:block; }
-
-    footer { background:#f2f2f2; color:#000; padding:10px; font-size:14px; display:flex; justify-content:space-between; align-items:center; }
-    footer a { color:#000; text-decoration:none; font-size:12px; }
-
-    .home-img { width:100%; display:block; }
-    .form-field { margin-bottom:10px; }
-    input, select, textarea { width:100%; padding:8px; margin-top:4px; }
-
-    button { background:#000; color:#fff; border:none; padding:10px 20px; border-radius:5px; cursor:pointer; }
-    button:hover { background:#333; }
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f7f7f7;
+      margin: 0;
+      padding: 0;
+    }
+    header {
+      background-color: #002b5c;
+      color: white;
+      text-align: center;
+      padding: 15px 0;
+      font-size: 1.4rem;
+      font-weight: bold;
+    }
+    .container {
+      max-width: 700px;
+      margin: 40px auto;
+      background: white;
+      padding: 25px;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    h2 { color: #002b5c; border-bottom: 2px solid #002b5c; padding-bottom: 5px; }
+    label { display: block; margin-top: 12px; }
+    input, select, textarea {
+      width: 100%; padding: 8px; border: 1px solid #ccc;
+      border-radius: 5px; box-sizing: border-box; margin-top: 4px;
+    }
+    button {
+      background-color: #002b5c;
+      color: white; border: none; border-radius: 6px;
+      padding: 10px 18px; margin-top: 15px;
+      cursor: pointer;
+    }
+    button:hover { background-color: #0044a8; }
+    .foto { text-align: center; margin-top: 30px; }
+    .foto img { width: 100%; border-radius: 10px; }
   </style>
 </head>
 <body>
-  <nav>
-    <a href="#" onclick="showSection('home')">Home Page</a>
-    <a href="#" onclick="showSection('dispensas')">Comunicação de Dispensas</a>
-    <a href="#" onclick="showSection('recibos')">Recibos de Jogo</a>
-    <a href="#" onclick="showSection('comunicados')">Comunicados</a>
-    <a href="#" onclick="showSection('calendario')">Calendário ABVC</a>
-    <a href="contactos.html">Contactos</a>
-  </nav>
 
-  <!-- Home -->
-  <section id="home" class="section active">
-    <img src="cad_abvc.png" alt="CAD ABVC" class="home-img">
-  </section>
+<header>CAD ABVC - Envio de Documentos</header>
 
-  <!-- Dispensas -->
-  <section id="dispensas" class="section">
-    <h2>Comunicação de Dispensas</h2>
-    <form id="form-dispensas">
-      <div class="form-field">
-        <label>Nome:</label>
-        <input type="text" id="nome" required>
-      </div>
-      <div class="form-field">
-        <label>Data:</label>
-        <input type="date" id="data" required>
-      </div>
-      <div class="form-field">
-        <label>Período:</label>
-        <select id="periodo" required>
-          <option value="Integral">Integral</option>
-          <option value="Manhã">Parte da Manhã</option>
-          <option value="Tarde">Parte da Tarde</option>
-          <option value="Noite">Parte da Noite</option>
-        </select>
-      </div>
-      <button type="submit">Enviar</button>
-    </form>
-  </section>
+<div class="container">
+  <h2>Enviar Dispensa</h2>
+  <form id="form-dispensa">
+    <label>Nome:</label>
+    <input type="text" id="nome" required />
 
-  <!-- Recibos -->
-  <section id="recibos" class="section">
-    <h2>Submissão de Recibos</h2>
-    <form id="form-recibos">
-      <div class="form-field">
-        <label>Nº de Jogo:</label>
-        <input type="text" id="numeroJogo" required>
-      </div>
-      <div class="form-field">
-        <label>Foto do Recibo (opcional):</label>
-        <input type="file" id="fotoRecibo" accept="image/*">
-      </div>
-      <button type="submit">Enviar</button>
-    </form>
-  </section>
+    <label>Data:</label>
+    <input type="date" id="data" required />
 
-  <!-- Comunicados -->
-  <section id="comunicados" class="section">
-    <h2>Comunicados</h2>
-    <p>Publicações do Conselho de Arbitragem aparecerão aqui.</p>
-  </section>
+    <label>Período:</label>
+    <select id="periodo" required>
+      <option value="">Selecione</option>
+      <option value="Manhã">Manhã</option>
+      <option value="Tarde">Tarde</option>
+      <option value="Dia Todo">Dia Todo</option>
+    </select>
 
-  <!-- Calendário -->
-  <section id="calendario" class="section">
-    <h2>Calendário ABVC</h2>
-    <iframe src="https://www.fpb.pt/calendario/associacao_17/?associacao=17&epoca=2025/2026&" width="100%" height="800"></iframe>
-  </section>
+    <label>Motivo:</label>
+    <textarea id="motivo" rows="3"></textarea>
 
-  <footer>
-    <div>
-      R. Conselheiro Arnaldo Norton de Matos 31, 4990-081 Pte. de Lima.
-    </div>
-    <a href="admin.html">Admin</a>
-  </footer>
+    <button type="submit">Enviar Dispensa</button>
+  </form>
+</div>
 
-  <script>
-    // CONFIGURAÇÃO SUPABASE
-    const SUPABASE_URL = "COLE_AQUI_SUA_URL";
-    const SUPABASE_KEY = "COLE_AQUI_SUA_ANON_KEY";
-    const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+<div class="container">
+  <h2>Enviar Recibo de Jogo</h2>
+  <form id="form-recibo">
+    <label>Número do Jogo:</label>
+    <input type="text" id="numero_jogo" required />
 
-    // Alternar seções
-    function showSection(id) {
-      document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
-      document.getElementById(id).classList.add('active');
+    <label>Foto do Recibo:</label>
+    <input type="file" id="foto" accept="image/*" />
+
+    <label>Árbitros (separe por vírgulas):</label>
+    <input type="text" id="arbitros" placeholder="Nome 1, Nome 2" />
+
+    <label>Total (€):</label>
+    <input type="number" step="0.01" id="total" required />
+
+    <button type="submit">Enviar Recibo</button>
+  </form>
+</div>
+
+<div class="foto">
+  <img src="cad_abvc.png" alt="CAD ABVC" />
+</div>
+
+<script>
+  const SUPABASE_URL = "https://prwhifyewscielsopluj.supabase.co";
+  const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InByd2hpZnlld3NjaWVsc29wbHVqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjMwMzA2MzEsImV4cCI6MjA3ODYwNjYzMX0.N8Op_2iUwRFd71YTninoztaInQtVLEnVIwbi2nIHkKg";
+
+  const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+  // Enviar Dispensa
+  document.getElementById("form-dispensa").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const nome = document.getElementById("nome").value;
+    const data = document.getElementById("data").value;
+    const periodo = document.getElementById("periodo").value;
+    const motivo = document.getElementById("motivo").value;
+
+    const { error } = await supabase.from("dispensas").insert([{ nome, data, periodo, motivo }]);
+    if (error) {
+      alert("Erro ao enviar: " + error.message);
+    } else {
+      alert("Dispensa enviada com sucesso!");
+      e.target.reset();
+    }
+  });
+
+  // Enviar Recibo
+  document.getElementById("form-recibo").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const numero_jogo = document.getElementById("numero_jogo").value;
+    const file = document.getElementById("foto").files[0];
+    const arbitros = document.getElementById("arbitros").value.split(",").map(a => a.trim());
+    const total = parseFloat(document.getElementById("total").value);
+
+    let foto_path = null;
+    if (file) {
+      const fileName = `recibos/${Date.now()}_${file.name}`;
+      const { data, error: uploadError } = await supabase.storage.from("recibos").upload(fileName, file);
+      if (uploadError) return alert("Erro ao enviar foto: " + uploadError.message);
+      foto_path = data.path;
     }
 
-    // Enviar DISPENSAS
-    document.getElementById("form-dispensas").addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const nome = document.getElementById("nome").value;
-      const data = document.getElementById("data").value;
-      const periodo = document.getElementById("periodo").value;
+    const { error } = await supabase.from("recibos").insert([{ numero_jogo, foto_path, arbitros, total }]);
+    if (error) {
+      alert("Erro ao enviar recibo: " + error.message);
+    } else {
+      alert("Recibo enviado com sucesso!");
+      e.target.reset();
+    }
+  });
+</script>
 
-      const { error } = await supabase.from("dispensas").insert([{ nome, data, periodo }]);
-      alert(error ? "Erro ao enviar dispensa!" : "Dispensa enviada com sucesso!");
-    });
-
-    // Enviar RECIBOS
-    document.getElementById("form-recibos").addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const numeroJogo = document.getElementById("numeroJogo").value;
-      const foto = document.getElementById("fotoRecibo").files[0];
-
-      let urlFoto = null;
-      if (foto) {
-        const { data, error: uploadError } = await supabase.storage.from("recibos").upload(`recibos/${Date.now()}_${foto.name}`, foto);
-        if (!uploadError) urlFoto = data.path;
-      }
-
-      const { error } = await supabase.from("recibos").insert([{ numero_jogo: numeroJogo, foto_url: urlFoto }]);
-      alert(error ? "Erro ao enviar recibo!" : "Recibo enviado com sucesso!");
-    });
-  </script>
 </body>
 </html>
