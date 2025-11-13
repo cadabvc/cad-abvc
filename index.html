@@ -6,18 +6,32 @@
 <title>AB Viana do Castelo - Conselho de Arbitragem</title>
 <style>
   body { margin:0; font-family: Arial, sans-serif; background: #fff; color: #000; }
+  
+  /* Header */
   header { width:100%; text-align:center; }
-  header img { width:100%; max-height:200px; object-fit:cover; }
+  header img {
+    width: 100%;
+    height: auto;      /* mantém proporção */
+    max-height: none;  /* remove limite de altura */
+    display: block;
+  }
+  header h1 { margin: 0.5rem 0; }
+
+  /* Menu superior */
   nav { display:flex; justify-content:center; background:#ccc; }
   nav ul { list-style:none; margin:0; padding:0; display:flex; width:100%; justify-content:center; }
   nav li { margin:0 1rem; }
   nav a { text-decoration:none; color:#000; font-weight:bold; padding:1rem; display:block; }
   nav a:hover { background:#aaa; color:#fff; border-radius:4px; }
+
+  /* Seções */
   section { display:none; padding:1rem; max-width:1200px; margin:0 auto; }
   section.active { display:block; }
+
   table { width:100%; border-collapse: collapse; margin-top:1rem; }
   th, td { border:1px solid #ddd; padding:0.5rem; text-align:center; }
   th { background:#ccc; }
+
   footer { text-align:center; padding:1rem; background:#eee; position:fixed; bottom:0; width:100%; }
   footer a { text-decoration:none; font-weight:bold; color:#000; }
 </style>
@@ -164,7 +178,6 @@ function showSection(id){
 // DISPENSAS
 const dispList = JSON.parse(localStorage.getItem('dispensas')||'[]');
 renderDispensas();
-
 function guardarDispensa(){
   const nome = document.getElementById('nomeDispensa').value;
   const data = document.getElementById('dataDispensa').value;
@@ -175,13 +188,11 @@ function guardarDispensa(){
   renderDispensas();
   alert('Dispensa registada com sucesso!');
 }
-
 function renderDispensas(){
   const div = document.getElementById('listaDispensas');
   if(dispList.length===0){ div.innerHTML='Nenhuma dispensa registada.'; return; }
   div.innerHTML = '<table><tr><th>Nome</th><th>Data</th><th>Período</th><th>Motivo</th></tr>'+dispList.map(d=>`<tr><td>${d.nome}</td><td>${d.data}</td><td>${d.periodo}</td><td>${d.motivo}</td></tr>`).join('')+'</table>';
 }
-
 function exportarDispensas(){
   const csv = 'Nome,Data,Período,Motivo\n'+dispList.map(d=>`${d.nome},${d.data},${d.periodo},${d.motivo}`).join('\n');
   const blob = new Blob([csv], {type:'text/csv'});
@@ -193,7 +204,6 @@ function exportarDispensas(){
 // RECIBOS
 const recList = JSON.parse(localStorage.getItem('recibos')||'[]');
 const tbody = document.querySelectorAll('#recibos tbody')[0];
-
 function atualizarTotais(){
   let totalGeral = 0;
   [...tbody.rows].forEach(r=>{
@@ -206,9 +216,7 @@ function atualizarTotais(){
   });
   document.getElementById('totalGeral').textContent = totalGeral.toFixed(2);
 }
-
 tbody.querySelectorAll('input').forEach(inp=>inp.addEventListener('input', atualizarTotais));
-
 function guardarRecibo(){
   const numeroJogo = document.getElementById('numeroJogo').value;
   const ficheiro = document.getElementById('ficheiroRecibo').files[0];
@@ -227,7 +235,6 @@ function guardarRecibo(){
   };
   if(ficheiro) reader.readAsDataURL(ficheiro); else reader.onload();
 }
-
 function exportarRecibos(){
   let csv = 'Nº Jogo,Nome,Prémio,Deslocação,Diversos,Total\n';
   recList.forEach(r=>{
@@ -244,7 +251,6 @@ function exportarRecibos(){
 // COMUNICADOS
 const comunicados = JSON.parse(localStorage.getItem('comunicados')||'[]');
 renderComunicados();
-
 function renderComunicados(){
   const div = document.getElementById('listaComunicados');
   if(comunicados.length===0){ div.innerHTML='Nenhum comunicado disponível.'; return; }
