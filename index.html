@@ -6,53 +6,34 @@
   <title>AB Viana do Castelo - Conselho de Arbitragem</title>
   <style>
     body { margin: 0; font-family: Arial, sans-serif; background: #f8f9fa; color: #333; }
-    
-    /* LANDING PAGE */
-    .landing {
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
-      height: 100vh; background: #003366; color: white; text-align: center;
-    }
-    .landing img {
-      width: 250px; height: auto; margin-bottom: 1rem; border-radius: 8px;
-    }
+    .landing { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; background: #003366; color: white; text-align: center; }
+    .landing img { width: 250px; height: auto; margin-bottom: 1rem; border-radius: 8px; }
     .landing h1 { font-size: 2.5rem; margin: 0; }
     .landing h2 { font-size: 1.5rem; margin: 0.5rem 0 2rem 0; }
-    .landing button {
-      padding: 0.7rem 2rem; font-size: 1rem; border: none; border-radius: 5px;
-      background: #ffcc00; color: #003366; cursor: pointer; font-weight: bold;
-    }
+    .landing button { padding: 0.7rem 2rem; font-size: 1rem; border: none; border-radius: 5px; background: #ffcc00; color: #003366; cursor: pointer; font-weight: bold; }
     .landing button:hover { background: #ffaa00; }
-
-    /* SITE PRINCIPAL */
     header { display: none; text-align: center; padding: 1rem; background: #003366; color: white; }
     nav { display: none; justify-content: center; gap: 1rem; background: #004080; padding: 0.5rem; }
     nav a { color: white; text-decoration: none; font-weight: bold; }
-
     section { display: none; padding: 1rem; }
     section.active { display: block; }
-
     form { background: white; padding: 1rem; border-radius: 8px; box-shadow: 0 0 5px rgba(0,0,0,0.1); }
     label { display: block; margin-top: 0.5rem; font-weight: bold; }
     input, select, textarea { width: 100%; padding: 0.5rem; margin-top: 0.3rem; border: 1px solid #ccc; border-radius: 4px; }
     button.form-btn { margin-top: 1rem; padding: 0.5rem 1rem; background: #003366; color: white; border: none; border-radius: 4px; cursor: pointer; }
     button.form-btn:hover { background: #0055aa; }
-
     table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
     th, td { border: 1px solid #ddd; padding: 0.5rem; text-align: center; }
     th { background: #003366; color: white; }
   </style>
 </head>
 <body>
-
-  <!-- LANDING PAGE -->
   <div class="landing" id="landingPage">
     <img src="https://cdn-icons-png.flaticon.com/512/2910/2910760.png" alt="Apito de Arbitragem">
     <h1>AB Viana do Castelo</h1>
     <h2>Conselho de Arbitragem</h2>
     <button onclick="entrarSite()">Entrar no Site</button>
   </div>
-
-  <!-- SITE PRINCIPAL -->
   <header id="siteHeader">
     <h1>CAD ABVC - Conselho de Arbitragem de Viana do Castelo</h1>
   </header>
@@ -63,17 +44,13 @@
     <a href="#" onclick="showSection('calendario')">Calendário</a>
     <a href="#" onclick="showSection('admin')">Admin</a>
   </nav>
-
-  <!-- DISPENSAS -->
   <section id="dispensas">
     <h2>Registo de Dispensas</h2>
     <form id="dispensaForm">
       <label>Nome:</label>
       <input type="text" id="nomeDispensa" required>
-
       <label>Data:</label>
       <input type="date" id="dataDispensa" required>
-
       <label>Período:</label>
       <select id="periodoDispensa" required>
         <option value="Integral">Integral</option>
@@ -81,23 +58,18 @@
         <option value="Tarde">Parte da Tarde</option>
         <option value="Noite">Parte da Noite</option>
       </select>
-
       <label>Motivo (opcional):</label>
       <textarea id="motivoDispensa" rows="3"></textarea>
-
       <button type="button" class="form-btn" onclick="guardarDispensa()">Guardar</button>
       <button type="button" class="form-btn" onclick="exportarDispensas()">Exportar CSV</button>
     </form>
     <div id="listaDispensas"></div>
   </section>
-
-  <!-- RECIBOS -->
   <section id="recibos">
     <h2>Submissão de Recibos</h2>
     <form id="reciboForm">
       <label>Nº do Jogo:</label>
       <input type="text" id="numeroJogo" required>
-
       <h3>Equipa de Arbitragem</h3>
       <table>
         <thead>
@@ -111,74 +83,29 @@
           </tr>
         </thead>
         <tbody id="tabelaArbitros">
-          <tr>
-            <td>Árbitro Principal</td>
-            <td><input type="text" class="nome"></td>
-            <td><input type="number" class="premio" min="0" step="0.01"></td>
-            <td><input type="number" class="deslocacao" min="0" step="0.01"></td>
-            <td><input type="number" class="diversos" min="0" step="0.01"></td>
-            <td class="total">0.00</td>
-          </tr>
-          <tr>
-            <td>Árbitro Auxiliar</td>
-            <td><input type="text" class="nome"></td>
-            <td><input type="number" class="premio" min="0" step="0.01"></td>
-            <td><input type="number" class="deslocacao" min="0" step="0.01"></td>
-            <td><input type="number" class="diversos" min="0" step="0.01"></td>
-            <td class="total">0.00</td>
-          </tr>
-          <tr>
-            <td>Marcador</td>
-            <td><input type="text" class="nome"></td>
-            <td><input type="number" class="premio" min="0" step="0.01"></td>
-            <td><input type="number" class="deslocacao" min="0" step="0.01"></td>
-            <td><input type="number" class="diversos" min="0" step="0.01"></td>
-            <td class="total">0.00</td>
-          </tr>
-          <tr>
-            <td>Operador 24”</td>
-            <td><input type="text" class="nome"></td>
-            <td><input type="number" class="premio" min="0" step="0.01"></td>
-            <td><input type="number" class="deslocacao" min="0" step="0.01"></td>
-            <td><input type="number" class="diversos" min="0" step="0.01"></td>
-            <td class="total">0.00</td>
-          </tr>
-          <tr>
-            <td>Cronometrista</td>
-            <td><input type="text" class="nome"></td>
-            <td><input type="number" class="premio" min="0" step="0.01"></td>
-            <td><input type="number" class="deslocacao" min="0" step="0.01"></td>
-            <td><input type="number" class="diversos" min="0" step="0.01"></td>
-            <td class="total">0.00</td>
-          </tr>
+          <tr><td>Árbitro Principal</td><td><input type="text" class="nome"></td><td><input type="number" class="premio" min="0" step="0.01"></td><td><input type="number" class="deslocacao" min="0" step="0.01"></td><td><input type="number" class="diversos" min="0" step="0.01"></td><td class="total">0.00</td></tr>
+          <tr><td>Árbitro Auxiliar</td><td><input type="text" class="nome"></td><td><input type="number" class="premio" min="0" step="0.01"></td><td><input type="number" class="deslocacao" min="0" step="0.01"></td><td><input type="number" class="diversos" min="0" step="0.01"></td><td class="total">0.00</td></tr>
+          <tr><td>Marcador</td><td><input type="text" class="nome"></td><td><input type="number" class="premio" min="0" step="0.01"></td><td><input type="number" class="deslocacao" min="0" step="0.01"></td><td><input type="number" class="diversos" min="0" step="0.01"></td><td class="total">0.00</td></tr>
+          <tr><td>Operador 24”</td><td><input type="text" class="nome"></td><td><input type="number" class="premio" min="0" step="0.01"></td><td><input type="number" class="deslocacao" min="0" step="0.01"></td><td><input type="number" class="diversos" min="0" step="0.01"></td><td class="total">0.00</td></tr>
+          <tr><td>Cronometrista</td><td><input type="text" class="nome"></td><td><input type="number" class="premio" min="0" step="0.01"></td><td><input type="number" class="deslocacao" min="0" step="0.01"></td><td><input type="number" class="diversos" min="0" step="0.01"></td><td class="total">0.00</td></tr>
         </tbody>
       </table>
-
       <h3>Total Geral (€): <span id="totalGeral">0.00</span></h3>
-
       <label>Upload do Recibo (PDF ou imagem):</label>
       <input type="file" id="ficheiroRecibo" accept=".pdf,.jpg,.png">
-
       <button type="button" class="form-btn" onclick="guardarRecibo()">Guardar Recibo</button>
       <button type="button" class="form-btn" onclick="exportarRecibos()">Exportar CSV</button>
     </form>
     <div id="listaRecibos"></div>
   </section>
-
-  <!-- COMUNICADOS -->
   <section id="comunicados">
     <h2>Comunicados</h2>
     <div id="listaComunicados"></div>
   </section>
-
-  <!-- CALENDÁRIO -->
   <section id="calendario">
     <h2>Calendário de Jogos</h2>
-    <iframe src="https://www.fpb.pt/calendario/associacao_17/?associacao=17&epoca=2025/2026&" 
-            width="100%" height="800" style="border:1px solid #ccc;"></iframe>
+    <iframe src="https://www.fpb.pt/calendario/associacao_17/?associacao=17&epoca=2025/2026&" width="100%" height="800" style="border:1px solid #ccc;"></iframe>
   </section>
-
-  <!-- ADMIN -->
   <section id="admin">
     <h2>Administração</h2>
     <form id="loginForm">
@@ -195,127 +122,20 @@
       <button type="button" class="form-btn" onclick="publicarComunicado()">Publicar</button>
     </div>
   </section>
-
   <script>
-    // LANDING PAGE
-    function entrarSite(){
-      document.getElementById('landingPage').style.display = 'none';
-      document.getElementById('siteHeader').style.display = 'block';
-      document.getElementById('siteNav').style.display = 'flex';
-      showSection('dispensas');
-    }
-
-    function showSection(id) {
-      document.querySelectorAll('section').forEach(s => s.classList.remove('active'));
-      document.getElementById(id).classList.add('active');
-    }
-
-    // DISPENSAS
-    const dispList = JSON.parse(localStorage.getItem('dispensas')||'[]');
-    renderDispensas();
-
-    function guardarDispensa(){
-      const nome = document.getElementById('nomeDispensa').value;
-      const data = document.getElementById('dataDispensa').value;
-      const periodo = document.getElementById('periodoDispensa').value;
-      const motivo = document.getElementById('motivoDispensa').value;
-      dispList.push({nome,data,periodo,motivo});
-      localStorage.setItem('dispensas', JSON.stringify(dispList));
-      renderDispensas();
-      alert('Dispensa registada com sucesso!');
-    }
-
-    function renderDispensas(){
-      const div = document.getElementById('listaDispensas');
-      div.innerHTML = '<table><tr><th>Nome</th><th>Data</th><th>Período</th><th>Motivo</th></tr>'+dispList.map(d=>`<tr><td>${d.nome}</td><td>${d.data}</td><td>${d.periodo}</td><td>${d.motivo}</td></tr>`).join('')+'</table>';
-    }
-
-    function exportarDispensas(){
-      const csv = 'Nome,Data,Período,Motivo\n'+dispList.map(d=>`${d.nome},${d.data},${d.periodo},${d.motivo}`).join('\n');
-      const blob = new Blob([csv], {type:'text/csv'});
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url; a.download = 'dispensas.csv'; a.click();
-    }
-
-    // RECIBOS
-    const recList = JSON.parse(localStorage.getItem('recibos')||'[]');
-    const tbody = document.getElementById('tabelaArbitros');
-
-    function atualizarTotais(){
-      let totalGeral = 0;
-      [...tbody.rows].forEach(r=>{
-        const premio = parseFloat(r.querySelector('.premio').value)||0;
-        const desloc = parseFloat(r.querySelector('.deslocacao').value)||0;
-        const diversos = parseFloat(r.querySelector('.diversos').value)||0;
-        const total = premio+desloc+diversos;
-        r.querySelector('.total').textContent = total.toFixed(2);
-        totalGeral += total;
-      });
-      document.getElementById('totalGeral').textContent = totalGeral.toFixed(2);
-    }
-
-    tbody.querySelectorAll('input').forEach(inp=>inp.addEventListener('input', atualizarTotais));
-
-    function guardarRecibo(){
-      const numeroJogo = document.getElementById('numeroJogo').value;
-      const ficheiro = document.getElementById('ficheiroRecibo').files[0];
-      const arbitros = [...tbody.rows].map(r=>({
-        nome:r.querySelector('.nome').value,
-        premio:r.querySelector('.premio').value,
-        deslocacao:r.querySelector('.deslocacao').value,
-        diversos:r.querySelector('.diversos').value,
-        total:r.querySelector('.total').textContent
-      }));
-      const reader = new FileReader();
-      reader.onload = ()=>{
-        recList.push({numeroJogo,arbitros,ficheiro:reader.result});
-        localStorage.setItem('recibos', JSON.stringify(recList));
-        alert('Recibo guardado com sucesso!');
-      };
-      if(ficheiro) reader.readAsDataURL(ficheiro); else reader.onload();
-    }
-
-    function exportarRecibos(){
-      let csv = 'Nº Jogo,Nome,Prémio,Deslocação,Diversos,Total\n';
-      recList.forEach(r=>{
-        r.arbitros.forEach(a=>{
-          csv += `${r.numeroJogo},${a.nome},${a.premio},${a.deslocacao},${a.diversos},${a.total}\n`;
-        });
-      });
-      const blob = new Blob([csv],{type:'text/csv'});
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url; a.download='recibos.csv'; a.click();
-    }
-
-    // COMUNICADOS
-    const comunicados = JSON.parse(localStorage.getItem('comunicados')||'[]');
-    renderComunicados();
-
-    function loginAdmin(){
-      const senha = document.getElementById('senhaAdmin').value;
-      if(senha==='cadabvc2025'){
-        document.getElementById('loginForm').style.display='none';
-        document.getElementById('adminPainel').style.display='block';
-      } else alert('Senha incorreta.');
-    }
-
-    function publicarComunicado(){
-      const titulo = document.getElementById('tituloComunicado').value;
-      const mensagem = document.getElementById('mensagemComunicado').value;
-      const data = new Date().toLocaleString();
-      comunicados.unshift({titulo,mensagem,data});
-      localStorage.setItem('comunicados',JSON.stringify(comunicados));
-      renderComunicados();
-      alert('Comunicado publicado!');
-    }
-
-    function renderComunicados(){
-      const div = document.getElementById('listaComunicados');
-      div.innerHTML = comunicados.map(c=>`<div style='background:#fff;padding:1rem;margin:.5rem 0;border-radius:8px;box-shadow:0 0 5px #ccc;'><h4>${c.titulo}</h4><p>${c.mensagem}</p><small>${c.data}</small></div>`).join('');
-    }
+    function entrarSite(){ document.getElementById('landingPage').style.display='none'; document.getElementById('siteHeader').style.display='block'; document.getElementById('siteNav').style.display='flex'; showSection('dispensas'); }
+    function showSection(id){ document.querySelectorAll('section').forEach(s=>s.classList.remove('active')); document.getElementById(id).classList.add('active'); }
+    const dispList=JSON.parse(localStorage.getItem('dispensas')||'[]'); renderDispensas();
+    function guardarDispensa(){ const nome=document.getElementById('nomeDispensa').value; const data=document.getElementById('dataDispensa').value; const periodo=document.getElementById('periodoDispensa').value; const motivo=document.getElementById('motivoDispensa').value; dispList.push({nome,data,periodo,motivo}); localStorage.setItem('dispensas',JSON.stringify(dispList)); renderDispensas(); alert('Dispensa registada com sucesso!'); }
+    function renderDispensas(){ const div=document.getElementById('listaDispensas'); div.innerHTML='<table><tr><th>Nome</th><th>Data</th><th>Período</th><th>Motivo</th></tr>'+dispList.map(d=>`<tr><td>${d.nome}</td><td>${d.data}</td><td>${d.periodo}</td><td>${d.motivo}</td></tr>`).join('')+'</table>'; }
+    function exportarDispensas(){ const csv='Nome,Data,Período,Motivo\n'+dispList.map(d=>`${d.nome},${d.data},${d.periodo},${d.motivo}`).join('\n'); const blob=new Blob([csv],{type:'text/csv'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='dispensas.csv'; a.click(); }
+    const recList=JSON.parse(localStorage.getItem('recibos')||'[]'); const tbody=document.getElementById('tabelaArbitros'); function atualizarTotais(){ let totalGeral=0; [...tbody.rows].forEach(r=>{ const premio=parseFloat(r.querySelector('.premio').value)||0; const desloc=parseFloat(r.querySelector('.deslocacao').value)||0; const diversos=parseFloat(r.querySelector('.diversos').value)||0; const total=premio+desloc+diversos; r.querySelector('.total').textContent=total.toFixed(2); totalGeral+=total; }); document.getElementById('totalGeral').textContent=totalGeral.toFixed(2); } 
+    tbody.querySelectorAll('input').forEach(inp=>inp.addEventListener('input',atualizarTotais));
+    function guardarRecibo(){ const numeroJogo=document.getElementById('numeroJogo').value; const ficheiro=document.getElementById('ficheiroRecibo').files[0]; const arbitros=[...tbody.rows].map(r=>({ nome:r.querySelector('.nome').value, premio:r.querySelector('.premio').value, deslocacao:r.querySelector('.deslocacao').value, diversos:r.querySelector('.diversos').value, total:r.querySelector('.total').textContent })); const reader=new FileReader(); reader.onload=()=>{ recList.push({numeroJogo,arbitros,ficheiro:reader.result}); localStorage.setItem('recibos',JSON.stringify(recList)); alert('Recibo guardado com sucesso!'); }; if(ficheiro) reader.readAsDataURL(ficheiro); else reader.onload(); }
+    function exportarRecibos(){ let csv='Nº Jogo,Nome,Prémio,Deslocação,Diversos,Total\n'; recList.forEach(r=>{ r.arbitros.forEach(a=>{ csv+=`${r.numeroJogo},${a.nome},${a.premio},${a.deslocacao},${a.diversos},${a.total}\n`; }); }); const blob=new Blob([csv],{type:'text/csv'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='recibos.csv'; a.click(); }
+    const comunicados=JSON.parse(localStorage.getItem('comunicados')||'[]'); renderComunicados(); function loginAdmin(){ const senha=document.getElementById('senhaAdmin').value; if(senha==='cadabvc2025'){ document.getElementById('loginForm').style.display='none'; document.getElementById('adminPainel').style.display='block'; } else alert('Senha incorreta.'); }
+    function publicarComunicado(){ const titulo=document.getElementById('tituloComunicado').value; const mensagem=document.getElementById('mensagemComunicado').value; const data=new Date().toLocaleString(); comunicados.unshift({titulo,mensagem,data}); localStorage.setItem('comunicados',JSON.stringify(comunicados)); renderComunicados(); alert('Comunicado publicado!'); }
+    function renderComunicados(){ const div=document.getElementById('listaComunicados'); div.innerHTML=comunicados.map(c=>`<div style='background:#fff;padding:1rem;margin:.5rem 0;border-radius:8px;box-shadow:0 0 5px #ccc;'><h4>${c.titulo}</h4><p>${c.mensagem}</p><small>${c.data}</small></div>`).join(''); }
   </script>
-
 </body>
 </html>
