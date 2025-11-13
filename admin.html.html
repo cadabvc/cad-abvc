@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin - CAD ABVC</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    body { font-family: Arial; background:#fff; color:#000; margin:0; padding:20px; }
+    h2 { text-align:center; }
+    table { width:100%; border-collapse:collapse; margin-top:20px; }
+    th, td { border:1px solid #ccc; padding:8px; text-align:left; }
+    th { background:#000; color:#fff; }
+    .login-box { width:300px; margin:50px auto; text-align:center; }
+    input { width:100%; padding:10px; margin:10px 0; }
+    button { background:#000; color:#fff; padding:10px 15px; border:none; cursor:pointer; }
+  </style>
+</head>
+<body>
+  <div id="login" class="login-box">
+    <h2>Login Admin</h2>
+    <input type="email" id="email" placeholder="Email">
+    <input type="password" id="password" placeholder="Senha">
+    <button onclick="login()">Entrar</button>
+  </div>
+
+  <div id="dashboard" style="display:none;">
+    <h2>Registros de Dispensas</h2>
+    <table id="table-dispensas">
+      <thead><tr><th>Nome</th><th>Data</th><th>Período</th></tr></thead>
+      <tbody></tbody>
+    </table>
+
+    <h2>Recibos Enviados</h2>
+    <table id="table-recibos">
+      <thead><tr><th>Nº Jogo</th><th>Foto</th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <script>
+    const SUPABASE_URL = "COLE_AQUI_SUA_URL";
+    const SUPABASE_KEY = "COLE_AQUI_SUA_ANON_KEY";
+    const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    async function login() {
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) return alert("Credenciais inválidas.");
+      document.getElementById("login").style.display = "none";
+      document.getElementById("dashboard").style.display = "block";
+      loadData();
+    }
+
+    async function loadData() {
+      const { data: dispensas } = await supabase.from("dispensas").select("*");
+      const { data: recibos } = await supabase.from("recibos").select("*");
+
+      const dispBody = document.querySelector("#table-dispensas tbody");
+      dispBody.innerHTML = dispensas.map(d => `<tr><td>${d.nome}</td><td>${d.data}</td><td>${d.periodo}</td></tr>`).join("");
+
+      const recBody = document.querySelector("#table-recibos tbody");
+      recBody.innerHTML = recibos.map(r => `<tr><td>${r.numero_jogo}</td><td>${r.foto_url ? `<a href="${r.foto_url}" target="_blank">Ver Foto</a>` : '-'}</td></tr>`).join("");
+    }
+  </script>
+</body>
+</html>
