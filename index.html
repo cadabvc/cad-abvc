@@ -6,16 +6,11 @@
 <title>AB Viana do Castelo - Conselho de Arbitragem</title>
 <style>
   body { margin:0; font-family: Arial, sans-serif; background: #fff; color: #000; }
-  
-  /* Header */
-  header { width:100%; text-align:center; }
-  header img {
-    width: 100%;
-    height: auto;      /* mantém proporção */
-    max-height: none;  /* remove limite de altura */
-    display: block;
-  }
-  header h1 { margin: 0.5rem 0; }
+
+  /* Header inicial */
+  #header-inicial { width:100%; text-align:center; margin-top:0; }
+  #header-inicial img { width:100%; height:auto; max-height:none; display:block; }
+  #header-inicial h1 { margin:0.5rem 0; }
 
   /* Menu superior */
   nav { display:flex; justify-content:center; background:#ccc; }
@@ -38,19 +33,19 @@
 </head>
 <body>
 
-<header>
+<nav>
+  <ul>
+    <li><a href="#" onclick="abrirSecao('dispensas')">Comunicação de Dispensas</a></li>
+    <li><a href="#" onclick="abrirSecao('recibos')">Recibos de Jogo</a></li>
+    <li><a href="#" onclick="abrirSecao('comunicados')">Comunicados</a></li>
+    <li><a href="#" onclick="abrirSecao('calendario')">Calendário ABVC</a></li>
+  </ul>
+</nav>
+
+<header id="header-inicial">
   <img src="abvc_cad.png" alt="AB Viana do Castelo Logo">
   <h1>AB Viana do Castelo - Conselho de Arbitragem</h1>
 </header>
-
-<nav>
-  <ul>
-    <li><a href="#" onclick="showSection('dispensas')">Comunicação de Dispensas</a></li>
-    <li><a href="#" onclick="showSection('recibos')">Recibos de Jogo</a></li>
-    <li><a href="#" onclick="showSection('comunicados')">Comunicados</a></li>
-    <li><a href="#" onclick="showSection('calendario')">Calendário ABVC</a></li>
-  </ul>
-</nav>
 
 <!-- DISPENSAS -->
 <section id="dispensas">
@@ -58,10 +53,8 @@
   <form id="dispensaForm">
     <label>Nome:</label>
     <input type="text" id="nomeDispensa" required>
-
     <label>Data:</label>
     <input type="date" id="dataDispensa" required>
-
     <label>Período:</label>
     <select id="periodoDispensa" required>
       <option value="Integral">Integral</option>
@@ -69,10 +62,8 @@
       <option value="Tarde">Parte da Tarde</option>
       <option value="Noite">Parte da Noite</option>
     </select>
-
     <label>Motivo (opcional):</label>
     <textarea id="motivoDispensa" rows="3"></textarea>
-
     <button type="button" onclick="guardarDispensa()">Guardar</button>
     <button type="button" onclick="exportarDispensas()">Exportar CSV</button>
   </form>
@@ -85,7 +76,6 @@
   <form id="reciboForm">
     <label>Nº do Jogo:</label>
     <input type="text" id="numeroJogo" required>
-
     <h3>Equipa de Arbitragem</h3>
     <table>
       <thead>
@@ -99,54 +89,16 @@
         </tr>
       </thead>
       <tbody>
-        <tr>
-          <td>Árbitro Principal</td>
-          <td><input type="text" class="nome"></td>
-          <td><input type="number" class="premio" min="0" step="0.01"></td>
-          <td><input type="number" class="deslocacao" min="0" step="0.01"></td>
-          <td><input type="number" class="diversos" min="0" step="0.01"></td>
-          <td class="total">0.00</td>
-        </tr>
-        <tr>
-          <td>Árbitro Auxiliar</td>
-          <td><input type="text" class="nome"></td>
-          <td><input type="number" class="premio" min="0" step="0.01"></td>
-          <td><input type="number" class="deslocacao" min="0" step="0.01"></td>
-          <td><input type="number" class="diversos" min="0" step="0.01"></td>
-          <td class="total">0.00</td>
-        </tr>
-        <tr>
-          <td>Marcador</td>
-          <td><input type="text" class="nome"></td>
-          <td><input type="number" class="premio" min="0" step="0.01"></td>
-          <td><input type="number" class="deslocacao" min="0" step="0.01"></td>
-          <td><input type="number" class="diversos" min="0" step="0.01"></td>
-          <td class="total">0.00</td>
-        </tr>
-        <tr>
-          <td>Operador 24"</td>
-          <td><input type="text" class="nome"></td>
-          <td><input type="number" class="premio" min="0" step="0.01"></td>
-          <td><input type="number" class="deslocacao" min="0" step="0.01"></td>
-          <td><input type="number" class="diversos" min="0" step="0.01"></td>
-          <td class="total">0.00</td>
-        </tr>
-        <tr>
-          <td>Cronometrista</td>
-          <td><input type="text" class="nome"></td>
-          <td><input type="number" class="premio" min="0" step="0.01"></td>
-          <td><input type="number" class="deslocacao" min="0" step="0.01"></td>
-          <td><input type="number" class="diversos" min="0" step="0.01"></td>
-          <td class="total">0.00</td>
-        </tr>
+        <tr><td>Árbitro Principal</td><td><input type="text" class="nome"></td><td><input type="number" class="premio" min="0" step="0.01"></td><td><input type="number" class="deslocacao" min="0" step="0.01"></td><td><input type="number" class="diversos" min="0" step="0.01"></td><td class="total">0.00</td></tr>
+        <tr><td>Árbitro Auxiliar</td><td><input type="text" class="nome"></td><td><input type="number" class="premio" min="0" step="0.01"></td><td><input type="number" class="deslocacao" min="0" step="0.01"></td><td><input type="number" class="diversos" min="0" step="0.01"></td><td class="total">0.00</td></tr>
+        <tr><td>Marcador</td><td><input type="text" class="nome"></td><td><input type="number" class="premio" min="0" step="0.01"></td><td><input type="number" class="deslocacao" min="0" step="0.01"></td><td><input type="number" class="diversos" min="0" step="0.01"></td><td class="total">0.00</td></tr>
+        <tr><td>Operador 24"</td><td><input type="text" class="nome"></td><td><input type="number" class="premio" min="0" step="0.01"></td><td><input type="number" class="deslocacao" min="0" step="0.01"></td><td><input type="number" class="diversos" min="0" step="0.01"></td><td class="total">0.00</td></tr>
+        <tr><td>Cronometrista</td><td><input type="text" class="nome"></td><td><input type="number" class="premio" min="0" step="0.01"></td><td><input type="number" class="deslocacao" min="0" step="0.01"></td><td><input type="number" class="diversos" min="0" step="0.01"></td><td class="total">0.00</td></tr>
       </tbody>
     </table>
-
     <h3>Total Geral (€): <span id="totalGeral">0.00</span></h3>
-
     <label>Upload do Recibo (PDF ou imagem):</label>
     <input type="file" id="ficheiroRecibo" accept=".pdf,.jpg,.png">
-
     <button type="button" onclick="guardarRecibo()">Guardar Recibo</button>
     <button type="button" onclick="exportarRecibos()">Exportar CSV</button>
   </form>
@@ -170,9 +122,20 @@
 </footer>
 
 <script>
-function showSection(id){
+// Controla seções e header inicial
+function abrirSecao(secaoId) {
+  const header = document.getElementById('header-inicial');
+  const sections = document.querySelectorAll('section');
+  sections.forEach(s => {
+    if(s.id === secaoId) s.classList.add('active');
+    else s.classList.remove('active');
+  });
+  header.style.display = 'none';
+}
+function mostrarHeaderInicial() {
+  const header = document.getElementById('header-inicial');
   document.querySelectorAll('section').forEach(s => s.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
+  header.style.display = 'block';
 }
 
 // DISPENSAS
@@ -197,38 +160,37 @@ function exportarDispensas(){
   const csv = 'Nome,Data,Período,Motivo\n'+dispList.map(d=>`${d.nome},${d.data},${d.periodo},${d.motivo}`).join('\n');
   const blob = new Blob([csv], {type:'text/csv'});
   const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url; a.download = 'dispensas.csv'; a.click();
+  const a = document.createElement('a'); a.href=url; a.click();
 }
 
 // RECIBOS
 const recList = JSON.parse(localStorage.getItem('recibos')||'[]');
 const tbody = document.querySelectorAll('#recibos tbody')[0];
+tbody.querySelectorAll('input').forEach(inp=>inp.addEventListener('input', atualizarTotais));
 function atualizarTotais(){
   let totalGeral = 0;
   [...tbody.rows].forEach(r=>{
-    const premio = parseFloat(r.querySelector('.premio').value)||0;
-    const desloc = parseFloat(r.querySelector('.deslocacao').value)||0;
-    const diversos = parseFloat(r.querySelector('.diversos').value)||0;
-    const total = premio+desloc+diversos;
+    const premio=parseFloat(r.querySelector('.premio').value)||0;
+    const desloc=parseFloat(r.querySelector('.deslocacao').value)||0;
+    const diversos=parseFloat(r.querySelector('.diversos').value)||0;
+    const total=premio+desloc+diversos;
     r.querySelector('.total').textContent = total.toFixed(2);
-    totalGeral += total;
+    totalGeral+=total;
   });
   document.getElementById('totalGeral').textContent = totalGeral.toFixed(2);
 }
-tbody.querySelectorAll('input').forEach(inp=>inp.addEventListener('input', atualizarTotais));
 function guardarRecibo(){
-  const numeroJogo = document.getElementById('numeroJogo').value;
-  const ficheiro = document.getElementById('ficheiroRecibo').files[0];
-  const arbitros = [...tbody.rows].map(r=>({
+  const numeroJogo=document.getElementById('numeroJogo').value;
+  const ficheiro=document.getElementById('ficheiroRecibo').files[0];
+  const arbitros=[...tbody.rows].map(r=>({
     nome:r.querySelector('.nome').value,
     premio:r.querySelector('.premio').value,
     deslocacao:r.querySelector('.deslocacao').value,
     diversos:r.querySelector('.diversos').value,
     total:r.querySelector('.total').textContent
   }));
-  const reader = new FileReader();
-  reader.onload = ()=>{
+  const reader=new FileReader();
+  reader.onload=()=>{
     recList.push({numeroJogo,arbitros,ficheiro:reader.result});
     localStorage.setItem('recibos', JSON.stringify(recList));
     alert('Recibo guardado com sucesso!');
@@ -236,23 +198,22 @@ function guardarRecibo(){
   if(ficheiro) reader.readAsDataURL(ficheiro); else reader.onload();
 }
 function exportarRecibos(){
-  let csv = 'Nº Jogo,Nome,Prémio,Deslocação,Diversos,Total\n';
+  let csv='Nº Jogo,Nome,Prémio,Deslocação,Diversos,Total\n';
   recList.forEach(r=>{
     r.arbitros.forEach(a=>{
-      csv += `${r.numeroJogo},${a.nome},${a.premio},${a.deslocacao},${a.diversos},${a.total}\n`;
+      csv+=`${r.numeroJogo},${a.nome},${a.premio},${a.deslocacao},${a.diversos},${a.total}\n`;
     });
   });
-  const blob = new Blob([csv],{type:'text/csv'});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url; a.download='recibos.csv'; a.click();
+  const blob=new Blob([csv],{type:'text/csv'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a'); a.href=url; a.download='recibos.csv'; a.click();
 }
 
 // COMUNICADOS
-const comunicados = JSON.parse(localStorage.getItem('comunicados')||'[]');
+const comunicados=JSON.parse(localStorage.getItem('comunicados')||'[]');
 renderComunicados();
 function renderComunicados(){
-  const div = document.getElementById('listaComunicados');
+  const div=document.getElementById('listaComunicados');
   if(comunicados.length===0){ div.innerHTML='Nenhum comunicado disponível.'; return; }
   div.innerHTML = comunicados.map(c=>`<div style='background:#fff;padding:1rem;margin:.5rem 0;border-radius:8px;box-shadow:0 0 5px #ccc;'><h4>${c.titulo}</h4><p>${c.mensagem}</p><small>${c.data}</small></div>`).join('');
 }
