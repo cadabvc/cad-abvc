@@ -6,18 +6,19 @@
 <title>CAD ABVC - Conselho de Arbitragem de Viana do Castelo</title>
 <style>
 body { margin:0; font-family: Arial, sans-serif; background:#fff; color:#000;}
-header { text-align:center; padding:0; }
-header img { width:100%; max-height:300px; object-fit:cover; display:block; }
+header { width:100%; }
+header img { width:100%; height:150px; object-fit:cover; display:block; }
 nav { display:flex; justify-content:center; gap:1rem; background:#333; }
 nav a { color:#fff; text-decoration:none; font-weight:bold; padding:1rem; cursor:pointer;}
 section { display:none; padding:1rem; }
 section.active { display:block; }
+.home-img { width:100%; max-height:300px; object-fit:cover; margin-top:10px; }
 form { background:#f8f8f8; padding:1rem; border-radius:8px; margin-bottom:1rem; }
 label { display:block; margin-top:0.5rem; }
 input, select, textarea { width:100%; padding:0.5rem; margin-top:0.3rem; }
 button { margin-top:0.5rem; padding:0.5rem 1rem; cursor:pointer; }
-table { width:100%; border-collapse: collapse; margin-top:0.5rem; }
-th, td { border:1px solid #ccc; padding:0.5rem; text-align:left; }
+table { width:100%; border-collapse: collapse; table-layout: fixed; }
+th, td { border:1px solid #ccc; padding:0.5rem; text-align:center; word-wrap:break-word;}
 .total { font-weight:bold; }
 footer { background:#333; color:#fff; padding:0.5rem 1rem; display:flex; justify-content:space-between; align-items:center; font-size:0.9rem;}
 footer a { color:#fff; text-decoration:none; }
@@ -26,7 +27,7 @@ footer a { color:#fff; text-decoration:none; }
 <body>
 
 <header>
-<img src="abvc_cad.png" alt="AB Viana do Castelo">
+<img src="header.png" alt="Header ABVC">
 </header>
 
 <nav>
@@ -39,6 +40,7 @@ footer a { color:#fff; text-decoration:none; }
 </nav>
 
 <section id="home" class="active">
+<img src="abvc_cad.png" alt="AB Viana do Castelo" class="home-img">
 <h2>Bem-vindo ao CAD ABVC</h2>
 <p>Use o menu acima para navegar pelas seções.</p>
 </section>
@@ -67,44 +69,19 @@ footer a { color:#fff; text-decoration:none; }
 <table>
 <tr><th>Cargo</th><th>Nome</th><th>Prémio (€)</th><th>Deslocação (€)</th><th>Diversos (€)</th><th>Total (€)</th></tr>
 <tr>
-<td>Árbitro Principal</td>
-<td><input type="text" class="nome"></td>
-<td><input type="text" class="premio"></td>
-<td><input type="text" class="deslocacao"></td>
-<td><input type="text" class="diversos"></td>
-<td class="total">0,00</td>
+<td>Árbitro Principal</td><td><input type="text" class="nome"></td><td><input type="text" class="premio"></td><td><input type="text" class="deslocacao"></td><td><input type="text" class="diversos"></td><td class="total">0,00</td>
 </tr>
 <tr>
-<td>Árbitro Auxiliar</td>
-<td><input type="text" class="nome"></td>
-<td><input type="text" class="premio"></td>
-<td><input type="text" class="deslocacao"></td>
-<td><input type="text" class="diversos"></td>
-<td class="total">0,00</td>
+<td>Árbitro Auxiliar</td><td><input type="text" class="nome"></td><td><input type="text" class="premio"></td><td><input type="text" class="deslocacao"></td><td><input type="text" class="diversos"></td><td class="total">0,00</td>
 </tr>
 <tr>
-<td>Marcador</td>
-<td><input type="text" class="nome"></td>
-<td><input type="text" class="premio"></td>
-<td><input type="text" class="deslocacao"></td>
-<td><input type="text" class="diversos"></td>
-<td class="total">0,00</td>
+<td>Marcador</td><td><input type="text" class="nome"></td><td><input type="text" class="premio"></td><td><input type="text" class="deslocacao"></td><td><input type="text" class="diversos"></td><td class="total">0,00</td>
 </tr>
 <tr>
-<td>Operador 24"</td>
-<td><input type="text" class="nome"></td>
-<td><input type="text" class="premio"></td>
-<td><input type="text" class="deslocacao"></td>
-<td><input type="text" class="diversos"></td>
-<td class="total">0,00</td>
+<td>Operador 24"</td><td><input type="text" class="nome"></td><td><input type="text" class="premio"></td><td><input type="text" class="deslocacao"></td><td><input type="text" class="diversos"></td><td class="total">0,00</td>
 </tr>
 <tr>
-<td>Cronometrista</td>
-<td><input type="text" class="nome"></td>
-<td><input type="text" class="premio"></td>
-<td><input type="text" class="deslocacao"></td>
-<td><input type="text" class="diversos"></td>
-<td class="total">0,00</td>
+<td>Cronometrista</td><td><input type="text" class="nome"></td><td><input type="text" class="premio"></td><td><input type="text" class="deslocacao"></td><td><input type="text" class="diversos"></td><td class="total">0,00</td>
 </tr>
 </table>
 <h3>Total Geral (€): <span id="totalGeral">0,00</span></h3>
@@ -146,18 +123,18 @@ document.getElementById(id).classList.add('active');
 
 // Atualizar totais com vírgula
 function atualizarTotais(){
-let totalGeral = 0;
-const rows = document.querySelectorAll('#recibos table tr');
+let totalGeral=0;
+const rows=document.querySelectorAll('#recibos table tr');
 rows.forEach((r,i)=>{
-if(i===0) return; // pular cabeçalho
-const premio = parseFloat(r.querySelector('.premio').value.replace(',','.'))||0;
-const desloc = parseFloat(r.querySelector('.deslocacao').value.replace(',','.'))||0;
-const diversos = parseFloat(r.querySelector('.diversos').value.replace(',','.'))||0;
-const total = premio+desloc+diversos;
-r.querySelector('.total').textContent = total.toFixed(2).replace('.',',');
-totalGeral += total;
+if(i===0) return;
+const premio=parseFloat(r.querySelector('.premio').value.replace(',','.'))||0;
+const desloc=parseFloat(r.querySelector('.deslocacao').value.replace(',','.'))||0;
+const diversos=parseFloat(r.querySelector('.diversos').value.replace(',','.'))||0;
+const total=premio+desloc+diversos;
+r.querySelector('.total').textContent=total.toFixed(2).replace('.',',');
+totalGeral+=total;
 });
-document.getElementById('totalGeral').textContent = totalGeral.toFixed(2).replace('.',',');
+document.getElementById('totalGeral').textContent=totalGeral.toFixed(2).replace('.',',');
 }
 
 // Adicionar evento input
@@ -168,9 +145,9 @@ r.querySelector(cls).addEventListener('input', atualizarTotais);
 });
 });
 
-// Submissão para Google Apps Script (substitua pelas URLs reais)
-const DISPENSA_URL = "COLE_AQUI_SUA_URL_DO_WEB_APP_DISPENSAS";
-const RECIBO_URL = "COLE_AQUI_SUA_URL_DO_WEB_APP_RECIBOS";
+// Submissão para Google Apps Script
+const DISPENSA_URL="COLE_AQUI_SUA_URL_DO_WEB_APP_DISPENSAS";
+const RECIBO_URL="COLE_AQUI_SUA_URL_DO_WEB_APP_RECIBOS";
 
 function enviarDispensa(){
 const data={tipo:"dispensa",nome:document.getElementById('nomeDispensa').value,data:document.getElementById('dataDispensa').value,periodo:document.getElementById('periodoDispensa').value,motivo:document.getElementById('motivoDispensa').value};
@@ -191,6 +168,5 @@ const msg=document.getElementById('mensagemEmail').value;
 window.location.href=`mailto:arbitragem.abvc@gmail.com?subject=${encodeURIComponent(assunto)}&body=${encodeURIComponent("De: "+email+"\n\n"+msg)}`;
 }
 </script>
-
 </body>
 </html>
