@@ -6,13 +6,17 @@
 <title>CAD ABVC - Conselho de Arbitragem de Viana do Castelo</title>
 <style>
 body { margin:0; font-family: Arial, sans-serif; background:#fff; color:#000;}
-header { width:100%; }
-header img { width:100%; height:150px; object-fit:cover; display:block; }
-nav { display:flex; justify-content:center; gap:1rem; background:#333; }
+/* Header */
+header { width:100%; height:120px; background:#333; display:flex; justify-content:center; align-items:center; }
+header img { max-height:100%; object-fit:contain; display:block; }
+/* Menu */
+nav { display:flex; justify-content:center; gap:1rem; background:#444; }
 nav a { color:#fff; text-decoration:none; font-weight:bold; padding:1rem; cursor:pointer;}
+/* Seções */
 section { display:none; padding:1rem; }
 section.active { display:block; }
-.home-img { width:100%; max-height:300px; object-fit:cover; margin-top:10px; }
+.home-img { width:100%; max-height:none; object-fit:contain; margin-top:10px; }
+/* Formulários e tabelas */
 form { background:#f8f8f8; padding:1rem; border-radius:8px; margin-bottom:1rem; }
 label { display:block; margin-top:0.5rem; }
 input, select, textarea { width:100%; padding:0.5rem; margin-top:0.3rem; }
@@ -20,16 +24,19 @@ button { margin-top:0.5rem; padding:0.5rem 1rem; cursor:pointer; }
 table { width:100%; border-collapse: collapse; table-layout: fixed; }
 th, td { border:1px solid #ccc; padding:0.5rem; text-align:center; word-wrap:break-word;}
 .total { font-weight:bold; }
+/* Rodapé */
 footer { background:#333; color:#fff; padding:0.5rem 1rem; display:flex; justify-content:space-between; align-items:center; font-size:0.9rem;}
 footer a { color:#fff; text-decoration:none; }
 </style>
 </head>
 <body>
 
+<!-- Header -->
 <header>
 <img src="header.png" alt="Header ABVC">
 </header>
 
+<!-- Menu -->
 <nav>
 <a onclick="showSection('home')">Home</a>
 <a onclick="showSection('dispensas')">Dispensas</a>
@@ -39,8 +46,9 @@ footer a { color:#fff; text-decoration:none; }
 <a onclick="showSection('contactos')">Contactos</a>
 </nav>
 
+<!-- Seções -->
 <section id="home" class="active">
-<img src="abvc_cad.png" alt="AB Viana do Castelo" class="home-img">
+<img src="cad_abvc.png" alt="AB Viana do Castelo" class="home-img">
 <h2>Bem-vindo ao CAD ABVC</h2>
 <p>Use o menu acima para navegar pelas seções.</p>
 </section>
@@ -145,22 +153,9 @@ r.querySelector(cls).addEventListener('input', atualizarTotais);
 });
 });
 
-// Submissão para Google Apps Script
-const DISPENSA_URL="COLE_AQUI_SUA_URL_DO_WEB_APP_DISPENSAS";
-const RECIBO_URL="COLE_AQUI_SUA_URL_DO_WEB_APP_RECIBOS";
-
-function enviarDispensa(){
-const data={tipo:"dispensa",nome:document.getElementById('nomeDispensa').value,data:document.getElementById('dataDispensa').value,periodo:document.getElementById('periodoDispensa').value,motivo:document.getElementById('motivoDispensa').value};
-fetch(DISPENSA_URL,{method:"POST",body:JSON.stringify(data)}).then(r=>alert("Dispensa enviada!")).catch(e=>alert("Erro ao enviar."));
-}
-
-function enviarRecibo(){
-const arbitros=[...document.querySelectorAll('#recibos .nome')].map(a=>a.value);
-const data={tipo:"recibo",numeroJogo:document.getElementById('numeroJogo').value,arbitros,total:document.getElementById('totalGeral').textContent};
-fetch(RECIBO_URL,{method:"POST",body:JSON.stringify(data)}).then(r=>alert("Recibo enviado!")).catch(e=>alert("Erro ao enviar."));
-}
-
-// Envio de email
+// Envio de dados (exemplo placeholders)
+function enviarDispensa(){ alert('Dispensa enviada!'); }
+function enviarRecibo(){ alert('Recibo enviado!'); }
 function enviarEmail(){
 const email=document.getElementById('emailRemetente').value;
 const assunto=document.getElementById('assuntoEmail').value;
