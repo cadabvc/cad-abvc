@@ -3,183 +3,193 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AB Viana do Castelo - Conselho de Arbitragem Distrital</title>
+<title>CAD ABVC - Conselho de Arbitragem de Viana do Castelo</title>
 <style>
-  body { margin:0; font-family: Arial, sans-serif; background: #fff; color: #000; }
-
-  /* Menu superior */
-  nav { display:flex; justify-content:center; background:#ccc; position:sticky; top:0; z-index:1000; }
-  nav ul { list-style:none; margin:0; padding:0; display:flex; width:100%; justify-content:center; }
-  nav li { margin:0 1rem; }
-  nav a { text-decoration:none; color:#000; font-weight:bold; padding:1rem; display:block; }
-  nav a:hover { background:#aaa; color:#fff; border-radius:4px; }
-
-  /* Header inicial */
-  #header-inicial { width:100%; text-align:center; margin-top:0; }
-  #header-inicial img { width:100%; height:auto; max-height:none; display:block; }
-  #header-inicial h1 { margin:0.5rem 0; }
-
-  /* Seções */
-  section { display:none; padding:2rem 1rem; max-width:1200px; margin:0 auto; }
-  section.active { display:block; }
-
-  table { width:100%; border-collapse: collapse; margin-top:1rem; }
-  th, td { border:1px solid #ddd; padding:0.5rem; text-align:center; }
-  th { background:#ccc; }
-
-  /* Rodapé */
-  footer { background:#eee; padding:1rem; display:flex; justify-content:space-between; align-items:center; font-size:0.9rem; position:relative; }
-  footer .admin { position:absolute; right:1rem; bottom:0.5rem; font-size:0.8rem; }
-  footer .morada { text-align:left; }
-
-  /* Contactos */
-  .contacto { margin-top:1rem; }
-  .contacto label { font-weight:bold; display:block; margin-top:0.5rem; }
-  .contacto input, .contacto textarea { width:100%; padding:0.5rem; margin-top:0.3rem; border:1px solid #ccc; border-radius:4px; }
-  .contacto button { margin-top:1rem; padding:0.5rem 1rem; background:#003366; color:white; border:none; border-radius:4px; cursor:pointer; }
-  .contacto button:hover { background:#0055aa; }
+body { margin:0; font-family: Arial, sans-serif; background:#fff; color:#000;}
+header { text-align:center; padding:0; }
+header img { width:100%; max-height:300px; object-fit:cover; display:block; }
+nav { display:flex; justify-content:center; gap:1rem; background:#333; }
+nav a { color:#fff; text-decoration:none; font-weight:bold; padding:1rem; cursor:pointer;}
+section { display:none; padding:1rem; }
+section.active { display:block; }
+form { background:#f8f8f8; padding:1rem; border-radius:8px; margin-bottom:1rem; }
+label { display:block; margin-top:0.5rem; }
+input, select, textarea { width:100%; padding:0.5rem; margin-top:0.3rem; }
+button { margin-top:0.5rem; padding:0.5rem 1rem; cursor:pointer; }
+table { width:100%; border-collapse: collapse; margin-top:0.5rem; }
+th, td { border:1px solid #ccc; padding:0.5rem; text-align:left; }
+.total { font-weight:bold; }
+footer { background:#333; color:#fff; padding:0.5rem 1rem; display:flex; justify-content:space-between; align-items:center; font-size:0.9rem;}
+footer a { color:#fff; text-decoration:none; }
 </style>
 </head>
 <body>
 
-<!-- Menu -->
-<nav>
-  <ul>
-    <li><a href="#" onclick="mostrarHeaderInicial()">Home Page</a></li>
-    <li><a href="#" onclick="abrirSecao('dispensas')">Comunicação de Dispensas</a></li>
-    <li><a href="#" onclick="abrirSecao('recibos')">Recibos de Jogo</a></li>
-    <li><a href="#" onclick="abrirSecao('comunicados')">Comunicados</a></li>
-    <li><a href="#" onclick="abrirSecao('calendario')">Calendário ABVC</a></li>
-    <li><a href="#" onclick="abrirSecao('contactos')">Contactos</a></li>
-  </ul>
-</nav>
-
-<!-- Header inicial -->
-<header id="header-inicial">
-  <img src="abvc_cad.png" alt="AB Viana do Castelo Logo">
-  <h1>AB Viana do Castelo - Conselho de Arbitragem</h1>
+<header>
+<img src="abvc_cad.png" alt="AB Viana do Castelo">
 </header>
 
-<!-- DISPENSAS -->
+<nav>
+<a onclick="showSection('home')">Home</a>
+<a onclick="showSection('dispensas')">Dispensas</a>
+<a onclick="showSection('recibos')">Recibos</a>
+<a onclick="showSection('comunicados')">Comunicados</a>
+<a onclick="showSection('calendario')">Calendário ABVC</a>
+<a onclick="showSection('contactos')">Contactos</a>
+</nav>
+
+<section id="home" class="active">
+<h2>Bem-vindo ao CAD ABVC</h2>
+<p>Use o menu acima para navegar pelas seções.</p>
+</section>
+
 <section id="dispensas">
-  <h2>Registo de Dispensas</h2>
-  <form id="dispensaForm">
-    <label>Nome:</label>
-    <input type="text" id="nomeDispensa" required>
-    <label>Data:</label>
-    <input type="date" id="dataDispensa" required>
-    <label>Período:</label>
-    <select id="periodoDispensa" required>
-      <option value="Integral">Integral</option>
-      <option value="Manhã">Parte da Manhã</option>
-      <option value="Tarde">Parte da Tarde</option>
-      <option value="Noite">Parte da Noite</option>
-    </select>
-    <label>Motivo (opcional):</label>
-    <textarea id="motivoDispensa" rows="3"></textarea>
-    <button type="button" onclick="guardarDispensa()">Guardar</button>
-    <button type="button" onclick="exportarDispensas()">Exportar CSV</button>
-  </form>
-  <div id="listaDispensas"></div>
+<h2>Registo de Dispensas</h2>
+<form id="dispensaForm">
+<label>Nome:</label><input type="text" id="nomeDispensa" required>
+<label>Data:</label><input type="date" id="dataDispensa" required>
+<label>Período:</label>
+<select id="periodoDispensa" required>
+<option value="Integral">Integral</option>
+<option value="Manhã">Parte da Manhã</option>
+<option value="Tarde">Parte da Tarde</option>
+<option value="Noite">Parte da Noite</option>
+</select>
+<label>Motivo:</label><textarea id="motivoDispensa"></textarea>
+<button type="button" onclick="enviarDispensa()">Enviar Dispensa</button>
+</form>
 </section>
 
-<!-- RECIBOS -->
 <section id="recibos">
-  <h2>Submissão de Recibos</h2>
-  <form id="reciboForm">
-    <label>Nº do Jogo:</label>
-    <input type="text" id="numeroJogo" required>
-    <h3>Equipa de Arbitragem</h3>
-    <table>
-      <thead>
-        <tr>
-          <th>Função</th>
-          <th>Nome</th>
-          <th>Prémio (€)</th>
-          <th>Deslocação (€)</th>
-          <th>Diversos (€)</th>
-          <th>Total (€)</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr><td>Árbitro Principal</td><td><input type="text" class="nome"></td><td><input type="number" class="premio" min="0" step="0.01"></td><td><input type="number" class="deslocacao" min="0" step="0.01"></td><td><input type="number" class="diversos" min="0" step="0.01"></td><td class="total">0.00</td></tr>
-        <tr><td>Árbitro Auxiliar</td><td><input type="text" class="nome"></td><td><input type="number" class="premio" min="0" step="0.01"></td><td><input type="number" class="deslocacao" min="0" step="0.01"></td><td><input type="number" class="diversos" min="0" step="0.01"></td><td class="total">0.00</td></tr>
-        <tr><td>Marcador</td><td><input type="text" class="nome"></td><td><input type="number" class="premio" min="0" step="0.01"></td><td><input type="number" class="deslocacao" min="0" step="0.01"></td><td><input type="number" class="diversos" min="0" step="0.01"></td><td class="total">0.00</td></tr>
-        <tr><td>Operador 24"</td><td><input type="text" class="nome"></td><td><input type="number" class="premio" min="0" step="0.01"></td><td><input type="number" class="deslocacao" min="0" step="0.01"></td><td><input type="number" class="diversos" min="0" step="0.01"></td><td class="total">0.00</td></tr>
-        <tr><td>Cronometrista</td><td><input type="text" class="nome"></td><td><input type="number" class="premio" min="0" step="0.01"></td><td><input type="number" class="deslocacao" min="0" step="0.01"></td><td><input type="number" class="diversos" min="0" step="0.01"></td><td class="total">0.00</td></tr>
-      </tbody>
-    </table>
-    <h3>Total Geral (€): <span id="totalGeral">0.00</span></h3>
-    <label>Upload do Recibo (PDF ou imagem):</label>
-    <input type="file" id="ficheiroRecibo" accept=".pdf,.jpg,.png">
-    <button type="button" onclick="guardarRecibo()">Guardar Recibo</button>
-    <button type="button" onclick="exportarRecibos()">Exportar CSV</button>
-  </form>
-  <div id="listaRecibos"></div>
+<h2>Submissão de Recibos</h2>
+<form id="reciboForm">
+<label>Nº do Jogo:</label><input type="text" id="numeroJogo" required>
+<table>
+<tr><th>Cargo</th><th>Nome</th><th>Prémio (€)</th><th>Deslocação (€)</th><th>Diversos (€)</th><th>Total (€)</th></tr>
+<tr>
+<td>Árbitro Principal</td>
+<td><input type="text" class="nome"></td>
+<td><input type="text" class="premio"></td>
+<td><input type="text" class="deslocacao"></td>
+<td><input type="text" class="diversos"></td>
+<td class="total">0,00</td>
+</tr>
+<tr>
+<td>Árbitro Auxiliar</td>
+<td><input type="text" class="nome"></td>
+<td><input type="text" class="premio"></td>
+<td><input type="text" class="deslocacao"></td>
+<td><input type="text" class="diversos"></td>
+<td class="total">0,00</td>
+</tr>
+<tr>
+<td>Marcador</td>
+<td><input type="text" class="nome"></td>
+<td><input type="text" class="premio"></td>
+<td><input type="text" class="deslocacao"></td>
+<td><input type="text" class="diversos"></td>
+<td class="total">0,00</td>
+</tr>
+<tr>
+<td>Operador 24"</td>
+<td><input type="text" class="nome"></td>
+<td><input type="text" class="premio"></td>
+<td><input type="text" class="deslocacao"></td>
+<td><input type="text" class="diversos"></td>
+<td class="total">0,00</td>
+</tr>
+<tr>
+<td>Cronometrista</td>
+<td><input type="text" class="nome"></td>
+<td><input type="text" class="premio"></td>
+<td><input type="text" class="deslocacao"></td>
+<td><input type="text" class="diversos"></td>
+<td class="total">0,00</td>
+</tr>
+</table>
+<h3>Total Geral (€): <span id="totalGeral">0,00</span></h3>
+<button type="button" onclick="enviarRecibo()">Enviar Recibo</button>
+</form>
 </section>
 
-<!-- COMUNICADOS -->
 <section id="comunicados">
-  <h2>Comunicados</h2>
-  <div id="listaComunicados"></div>
+<h2>Comunicados</h2>
+<p>Lista de comunicados aparecerá aqui.</p>
 </section>
 
-<!-- CALENDÁRIO -->
 <section id="calendario">
-  <h2>Calendário ABVC</h2>
-  <iframe src="https://www.fpb.pt/calendario/associacao_17/?associacao=17&epoca=2025/2026&" style="width:100%; height:800px; border:none;"></iframe>
+<h2>Calendário ABVC</h2>
+<iframe src="https://www.fpb.pt/calendario/associacao_17/?associacao=17&epoca=2025/2026" style="width:100%;height:600px;border:none;"></iframe>
 </section>
 
-<!-- CONTACTOS -->
 <section id="contactos">
-  <h2>Contactos</h2>
-
-  <div class="contacto">
-    <label>WhatsApp:</label>
-    <a href="https://wa.me/351926166077?text=Olá%20ABVC" target="_blank">Enviar mensagem via WhatsApp</a>
-  </div>
-
-  <div class="contacto">
-    <form onsubmit="enviarEmail(); return false;">
-      <label>Email do remetente:</label>
-      <input type="email" id="emailRemetente" required>
-      <label>Assunto:</label>
-      <input type="text" id="assuntoEmail" required>
-      <label>Mensagem:</label>
-      <textarea id="corpoEmail" rows="5" required></textarea>
-      <button type="submit">Enviar Email</button>
-    </form>
-  </div>
+<h2>Contactos</h2>
+<p><a href="https://wa.me/351926166077" target="_blank">Enviar WhatsApp</a></p>
+<form id="emailForm">
+<label>Seu Email:</label><input type="email" id="emailRemetente">
+<label>Assunto:</label><input type="text" id="assuntoEmail">
+<label>Mensagem:</label><textarea id="mensagemEmail"></textarea>
+<button type="button" onclick="enviarEmail()">Enviar Email</button>
+</form>
 </section>
 
-<!-- Rodapé -->
 <footer>
-  <div class="morada">R. Conselheiro Arnaldo Norton de Matos 31, 4990-081 Pte. de Lima</div>
-  <div class="admin"><a href="admin.html">Admin</a></div>
+<span>R. Conselheiro Arnaldo Norton de Matos 31, 4990-081 Pte. de Lima</span>
+<span><a href="admin.html">Admin</a></span>
 </footer>
 
 <script>
-function abrirSecao(secaoId){
-  const header = document.getElementById('header-inicial');
-  const sections = document.querySelectorAll('section');
-  sections.forEach(s=> s.id===secaoId ? s.classList.add('active') : s.classList.remove('active'));
-  header.style.display='none';
-}
-function mostrarHeaderInicial(){
-  const header = document.getElementById('header-inicial');
-  document.querySelectorAll('section').forEach(s=>s.classList.remove('active'));
-  header.style.display='block';
+function showSection(id){
+document.querySelectorAll('section').forEach(s=>s.classList.remove('active'));
+document.getElementById(id).classList.add('active');
 }
 
-// Função simples para abrir email via mailto
+// Atualizar totais com vírgula
+function atualizarTotais(){
+let totalGeral = 0;
+const rows = document.querySelectorAll('#recibos table tr');
+rows.forEach((r,i)=>{
+if(i===0) return; // pular cabeçalho
+const premio = parseFloat(r.querySelector('.premio').value.replace(',','.'))||0;
+const desloc = parseFloat(r.querySelector('.deslocacao').value.replace(',','.'))||0;
+const diversos = parseFloat(r.querySelector('.diversos').value.replace(',','.'))||0;
+const total = premio+desloc+diversos;
+r.querySelector('.total').textContent = total.toFixed(2).replace('.',',');
+totalGeral += total;
+});
+document.getElementById('totalGeral').textContent = totalGeral.toFixed(2).replace('.',',');
+}
+
+// Adicionar evento input
+document.querySelectorAll('#recibos table tr').forEach((r,i)=>{
+if(i===0) return;
+['.premio','.deslocacao','.diversos'].forEach(cls=>{
+r.querySelector(cls).addEventListener('input', atualizarTotais);
+});
+});
+
+// Submissão para Google Apps Script (substitua pelas URLs reais)
+const DISPENSA_URL = "COLE_AQUI_SUA_URL_DO_WEB_APP_DISPENSAS";
+const RECIBO_URL = "COLE_AQUI_SUA_URL_DO_WEB_APP_RECIBOS";
+
+function enviarDispensa(){
+const data={tipo:"dispensa",nome:document.getElementById('nomeDispensa').value,data:document.getElementById('dataDispensa').value,periodo:document.getElementById('periodoDispensa').value,motivo:document.getElementById('motivoDispensa').value};
+fetch(DISPENSA_URL,{method:"POST",body:JSON.stringify(data)}).then(r=>alert("Dispensa enviada!")).catch(e=>alert("Erro ao enviar."));
+}
+
+function enviarRecibo(){
+const arbitros=[...document.querySelectorAll('#recibos .nome')].map(a=>a.value);
+const data={tipo:"recibo",numeroJogo:document.getElementById('numeroJogo').value,arbitros,total:document.getElementById('totalGeral').textContent};
+fetch(RECIBO_URL,{method:"POST",body:JSON.stringify(data)}).then(r=>alert("Recibo enviado!")).catch(e=>alert("Erro ao enviar."));
+}
+
+// Envio de email
 function enviarEmail(){
-  const remetente = document.getElementById('emailRemetente').value;
-  const assunto = encodeURIComponent(document.getElementById('assuntoEmail').value);
-  const corpo = encodeURIComponent(document.getElementById('corpoEmail').value + "\n\nEnviado por: " + remetente);
-  window.location.href = `mailto:arbitragem.abvc@gmail.com?subject=${assunto}&body=${corpo}`;
+const email=document.getElementById('emailRemetente').value;
+const assunto=document.getElementById('assuntoEmail').value;
+const msg=document.getElementById('mensagemEmail').value;
+window.location.href=`mailto:arbitragem.abvc@gmail.com?subject=${encodeURIComponent(assunto)}&body=${encodeURIComponent("De: "+email+"\n\n"+msg)}`;
 }
-
-// Aqui você adiciona os scripts de Dispensas, Recibos e Comunicados (como no HTML anterior)
 </script>
 
 </body>
