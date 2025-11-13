@@ -70,7 +70,7 @@
       <table>
         <thead>
           <tr>
-            <th>#</th>
+            <th>Função</th>
             <th>Nome</th>
             <th>Prémio (€)</th>
             <th>Deslocação (€)</th>
@@ -78,9 +78,9 @@
             <th>Total (€)</th>
           </tr>
         </thead>
-        <tbody id="tabelaArbitros"></tbody>
+        <tbody id="tabelaArbitros">
+        </tbody>
       </table>
-      <button type="button" onclick="adicionarLinha()">Adicionar Árbitro</button>
 
       <h3>Total Geral (€): <span id="totalGeral">0.00</span></h3>
 
@@ -155,13 +155,13 @@
     const recList = JSON.parse(localStorage.getItem('recibos')||'[]');
     const tbody = document.getElementById('tabelaArbitros');
 
-    function adicionarLinha(){
-      if(tbody.rows.length >= 5) return alert('Máximo de 5 elementos.');
+    const funcoesArbitros = ['Árbitro Principal','Árbitro Auxiliar','Marcador','Operador 24"','Cronometrista'];
+
+    funcoesArbitros.forEach(funcao => {
       const r = tbody.insertRow();
-      const i = tbody.rows.length;
-      r.innerHTML = `<td>${i}</td><td><input type='text' class='nome'></td><td><input type='number' class='premio' min='0' step='0.01'></td><td><input type='number' class='deslocacao' min='0' step='0.01'></td><td><input type='number' class='diversos' min='0' step='0.01'></td><td class='total'>0.00</td>`;
+      r.innerHTML = `<td>${funcao}</td><td><input type='text' class='nome'></td><td><input type='number' class='premio' min='0' step='0.01'></td><td><input type='number' class='deslocacao' min='0' step='0.01'></td><td><input type='number' class='diversos' min='0' step='0.01'></td><td class='total'>0.00</td>`;
       r.querySelectorAll('input').forEach(inp=>inp.addEventListener('input', atualizarTotais));
-    }
+    });
 
     function atualizarTotais(){
       let totalGeral = 0;
@@ -180,6 +180,7 @@
       const numeroJogo = document.getElementById('numeroJogo').value;
       const ficheiro = document.getElementById('ficheiroRecibo').files[0];
       const arbitros = [...tbody.rows].map(r=>({
+        funcao: r.cells[0].textContent,
         nome:r.querySelector('.nome').value,
         premio:r.querySelector('.premio').value,
         deslocacao:r.querySelector('.deslocacao').value,
@@ -196,10 +197,10 @@
     }
 
     function exportarRecibos(){
-      let csv = 'Nº Jogo,Nome,Prémio,Deslocação,Diversos,Total\n';
+      let csv = 'Nº Jogo,Função,Nome,Prémio,Deslocação,Diversos,Total\n';
       recList.forEach(r=>{
         r.arbitros.forEach(a=>{
-          csv += `${r.numeroJogo},${a.nome},${a.premio},${a.deslocacao},${a.diversos},${a.total}\n`;
+          csv += `${r.numeroJogo},${a.funcao},${a.nome},${a.premio},${a.deslocacao},${a.diversos},${a.total}\n`;
         });
       });
       const blob = new Blob([csv],{type:'text/csv'});
