@@ -5,19 +5,17 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>CAD ABVC - Conselho de Arbitragem</title>
 
-<!-- supabase -->
+<!-- Supabase -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
 :root{--accent:#000}
 body{margin:0;font-family:Arial,Helvetica,sans-serif;background:#fff;color:#000;line-height:1.4}
-header{background:var(--accent);color:#fff;padding:12px;text-align:center}
-header img{max-width:220px;height:auto;display:block;margin:0 auto}
-nav{display:flex;gap:.5rem;justify-content:center;background:#222;padding:6px;flex-wrap:wrap}
+nav{display:flex;gap:.5rem;justify-content:center;background:#222;padding:8px;flex-wrap:wrap}
 nav a{color:#fff;text-decoration:none;padding:.6rem .8rem;font-weight:700;border-radius:6px;cursor:pointer}
 nav a:hover{background:#333}
 .container{max-width:1100px;margin:14px auto;padding:0 12px}
-.home-img{width:100%;height:auto;border-radius:6px}
+.home-img{width:100%;height:auto;border-radius:6px;margin-top:10px}
 section{display:none;padding:12px 0}
 section.active{display:block}
 form{background:#f8f8f8;padding:12px;border-radius:8px;margin-bottom:12px}
@@ -32,7 +30,7 @@ th,td{border:1px solid #ddd;padding:8px;text-align:center;word-break:break-word}
 footer{background:#000;color:#fff;padding:10px 12px;display:flex;justify-content:space-between;flex-wrap:wrap;font-size:0.9rem}
 .footer-link{color:#fff;text-decoration:none}
 
-/* mobile */
+/* MOBILE */
 @media(max-width:700px){
   nav{padding:8px}
   table, thead, tbody, th, td, tr{display:block}
@@ -43,9 +41,6 @@ footer{background:#000;color:#fff;padding:10px 12px;display:flex;justify-content
 </style>
 </head>
 <body>
-<header>
-  <img src="abvc_cad.png" alt="ABVC">
-</header>
 
 <nav>
   <a onclick="showSection('home')">Home</a>
@@ -57,9 +52,10 @@ footer{background:#000;color:#fff;padding:10px 12px;display:flex;justify-content
 </nav>
 
 <div class="container">
-  <!-- HOME -->
+
+  <!-- HOME (imagem usada aqui) -->
   <section id="home" class="active">
-    <img src="abvc_cad.png" class="home-img" alt="CAD ABVC">
+    <img src="abvc_cad.png" alt="AB Viana do Castelo" class="home-img">
     <h2>Bem-vindo ao CAD da ABVC</h2>
     <p>Use o menu para registar dispensas, submeter recibos e consultar o calendário.</p>
   </section>
@@ -184,7 +180,7 @@ footer{background:#000;color:#fff;padding:10px 12px;display:flex;justify-content
     <div id="listaComunicados">—</div>
   </section>
 
-  <!-- CALENDARIO -->
+  <!-- CALENDÁRIO -->
   <section id="calendario">
     <h2>Calendário ABVC</h2>
     <iframe src="https://www.fpb.pt/calendario/associacao_17/?associacao=17&epoca=2025/2026" style="width:100%;height:600px;border:0"></iframe>
@@ -204,6 +200,7 @@ footer{background:#000;color:#fff;padding:10px 12px;display:flex;justify-content
       <button type="button" onclick="enviarEmail()">Enviar Email</button>
     </form>
   </section>
+
 </div>
 
 <footer>
@@ -212,12 +209,12 @@ footer{background:#000;color:#fff;padding:10px 12px;display:flex;justify-content
 </footer>
 
 <script>
-/* ---------- supabase config ---------- */
+/* ---------- Supabase ---------- */
 const SUPABASE_URL = 'https://prwhifyewscielsopluj.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InByd2hpZnlld3NjaWVsc29wbHVqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjMwMzA2MzEsImV4cCI6MjA3ODYwNjYzMX0.N8Op_2iUwRFd71YTninoztaInQtVLEnVIwbi2nIHkKg';
 const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-/* ---------- navegação ---------- */
+/* ---------- Navegação ---------- */
 function showSection(id){
   document.querySelectorAll('section').forEach(s=>s.classList.remove('active'));
   const el = document.getElementById(id);
@@ -227,15 +224,20 @@ function showSection(id){
   if(id==='recibos') carregarListaRecibos();
 }
 
-/* ---------- cálculo dos totais ---------- */
+/* ---------- Totais: corretamente ligados após DOM load ---------- */
 function atualizarTotais(){
   let totalGeral = 0;
   document.querySelectorAll('#tabelaRecibosBody tr').forEach(row=>{
-    const premio = parseFloat((row.querySelector('.premio').value || 0).toString().replace(',', '.')) || 0;
-    const desloc = parseFloat((row.querySelector('.deslocacao').value || 0).toString().replace(',', '.')) || 0;
-    const diversos = parseFloat((row.querySelector('.diversos').value || 0).toString().replace(',', '.')) || 0;
-    const total = premio + desloc + diversos;
+    const premioEl = row.querySelector('.premio');
+    const deslocEl = row.querySelector('.deslocacao');
+    const diversosEl = row.querySelector('.diversos');
     const totalTd = row.querySelector('.total');
+
+    const premio = parseFloat((premioEl.value || 0).toString().replace(',', '.')) || 0;
+    const desloc = parseFloat((deslocEl.value || 0).toString().replace(',', '.')) || 0;
+    const diversos = parseFloat((diversosEl.value || 0).toString().replace(',', '.')) || 0;
+    const total = premio + desloc + diversos;
+
     if(totalTd) totalTd.textContent = total.toFixed(2).replace('.', ',');
     totalGeral += total;
   });
@@ -243,18 +245,18 @@ function atualizarTotais(){
   if(tg) tg.textContent = totalGeral.toFixed(2).replace('.', ',');
 }
 
-/* adicionar listeners depois do DOM pronto */
-document.addEventListener('DOMContentLoaded', ()=>{
-  // liga listeners aos inputs numéricos
+/* ligar listeners quando DOM pronto */
+document.addEventListener('DOMContentLoaded', () => {
+  // inputs numéricos
   document.querySelectorAll('#tabelaRecibosBody input.premio, #tabelaRecibosBody input.deslocacao, #tabelaRecibosBody input.diversos')
     .forEach(inp => inp.addEventListener('input', atualizarTotais));
 
-  // iniciar listas
+  // também ligar se houver inputs dinamicamente (mutation observer could be used later)
+  atualizarTotais();
+
+  // carregar listas iniciais
   carregarListaDispensas();
   carregarListaRecibos();
-
-  // calcular iniciais
-  atualizarTotais();
 });
 
 /* ---------- DISPENSAS ---------- */
@@ -275,13 +277,8 @@ async function enviarDispensa(){
   }
 
   const payload = { nome, data_inicio: dataInicio, data_fim: dataFim, periodo, motivo };
-
   const { error } = await supabase.from('dispensas').insert([payload]);
-  if(error){
-    console.error(error);
-    alert('Erro ao enviar dispensa: ' + error.message);
-    return;
-  }
+  if(error){ console.error(error); alert('Erro: '+error.message); return; }
   alert('Dispensa enviada com sucesso!');
   document.getElementById('dispensaForm').reset();
   carregarListaDispensas();
@@ -296,7 +293,7 @@ async function carregarListaDispensas(){
     if(!data || data.length===0){ div.innerHTML = '<p>Sem dispensas registadas.</p>'; return; }
     let html = '<div class="table-wrap"><table><thead><tr><th>Nome</th><th>Início</th><th>Fim</th><th>Período</th><th>Motivo</th></tr></thead><tbody>';
     data.forEach(d=>{
-      html += `<tr><td data-label="Nome">${escapeHtml(d.nome)}</td><td data-label="Início">${d.data_inicio || ''}</td><td data-label="Fim">${d.data_fim || ''}</td><td data-label="Período">${escapeHtml(d.periodo||'')}</td><td data-label="Motivo">${escapeHtml(d.motivo||'')}</td></tr>`;
+      html += `<tr><td data-label="Nome">${escapeHtml(d.nome)}</td><td data-label="Início">${d.data_inicio||''}</td><td data-label="Fim">${d.data_fim||''}</td><td data-label="Período">${escapeHtml(d.periodo||'')}</td><td data-label="Motivo">${escapeHtml(d.motivo||'')}</td></tr>`;
     });
     html += '</tbody></table></div>';
     div.innerHTML = html;
@@ -329,31 +326,30 @@ async function enviarRecibo(){
 
   if(arbitros.length === 0){ alert('Preencha pelo menos um árbitro com nome.'); return; }
 
-  // upload do ficheiro (opcional)
+  // opcional: upload ficheiro
   let ficheiroUrl = null;
   const ficheiro = document.getElementById('ficheiroRecibo').files[0];
   if(ficheiro){
     try{
       const safeName = `${Date.now()}_${ficheiro.name.replace(/\s+/g,'_')}`;
-      const { data: upData, error: upErr } = await supabase.storage.from('recibos').upload(`public/${safeName}`, ficheiro);
+      const { error: upErr } = await supabase.storage.from('recibos').upload(`public/${safeName}`, ficheiro);
       if(upErr){ throw upErr; }
       const { data: urlData } = await supabase.storage.from('recibos').getPublicUrl(`public/${safeName}`);
       ficheiroUrl = urlData?.publicUrl || null;
     }catch(err){
       console.error(err);
-      alert('Erro no upload do ficheiro: ' + err.message);
+      alert('Erro no upload do ficheiro: ' + (err.message || err));
       return;
     }
   }
 
-  // gravar no supabase (tabela 'recibos')
   const payload = { numero_jogo: numeroJogo, arbitros, total: totalGeral, ficheiro_url: ficheiroUrl };
   const { error } = await supabase.from('recibos').insert([payload]);
   if(error){ console.error(error); alert('Erro ao gravar recibo: ' + error.message); return; }
 
   alert('Recibo enviado com sucesso!');
   document.getElementById('reciboForm').reset();
-  // reset totals
+  // reset totals display
   rows.forEach(r=> r.querySelector('.total').textContent = '0,00');
   document.getElementById('totalGeral').textContent = '0,00';
   carregarListaRecibos();
@@ -396,11 +392,12 @@ function enviarEmail(){
   window.location.href = `mailto:arbitragem.abvc@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent('De: '+from+'\n\n'+body)}`;
 }
 
-/* helper escape */
+/* helper */
 function escapeHtml(str){
   if(!str) return '';
   return String(str).replace(/[&<>"'`=\/]/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;','`':'&#96;','=':'&#61;','/':'&#47;'}[s]));
 }
 </script>
+
 </body>
 </html>
