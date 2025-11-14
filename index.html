@@ -121,7 +121,6 @@ footer{background:#000;color:#fff;padding:10px 12px;display:flex;justify-content
               <th>Deslocação (€)</th>
               <th>Diversos (€)</th>
               <th>Total (€)</th>
-              <th>Remover</th>
             </tr>
           </thead>
           <tbody id="tabelaRecibosBody">
@@ -132,7 +131,38 @@ footer{background:#000;color:#fff;padding:10px 12px;display:flex;justify-content
               <td data-label="Deslocação"><input type="number" class="deslocacao" step="0.01" min="0"></td>
               <td data-label="Diversos"><input type="number" class="diversos" step="0.01" min="0"></td>
               <td data-label="Total" class="total">0,00</td>
-              <td data-label="Remover"><button type="button" class="btn-remover">X</button></td>
+            </tr>
+            <tr>
+              <td data-label="Cargo">Árbitro Auxiliar</td>
+              <td data-label="Nome"><input type="text" class="nome"></td>
+              <td data-label="Prémio"><input type="number" class="premio" step="0.01" min="0"></td>
+              <td data-label="Deslocação"><input type="number" class="deslocacao" step="0.01" min="0"></td>
+              <td data-label="Diversos"><input type="number" class="diversos" step="0.01" min="0"></td>
+              <td data-label="Total" class="total">0,00</td>
+            </tr>
+            <tr>
+              <td data-label="Cargo">Marcador</td>
+              <td data-label="Nome"><input type="text" class="nome"></td>
+              <td data-label="Prémio"><input type="number" class="premio" step="0.01" min="0"></td>
+              <td data-label="Deslocação"><input type="number" class="deslocacao" step="0.01" min="0"></td>
+              <td data-label="Diversos"><input type="number" class="diversos" step="0.01" min="0"></td>
+              <td data-label="Total" class="total">0,00</td>
+            </tr>
+            <tr>
+              <td data-label="Cargo">Cronometrista</td>
+              <td data-label="Nome"><input type="text" class="nome"></td>
+              <td data-label="Prémio"><input type="number" class="premio" step="0.01" min="0"></td>
+              <td data-label="Deslocação"><input type="number" class="deslocacao" step="0.01" min="0"></td>
+              <td data-label="Diversos"><input type="number" class="diversos" step="0.01" min="0"></td>
+              <td data-label="Total" class="total">0,00</td>
+            </tr>
+            <tr>
+              <td data-label="Cargo">Operador 24´</td>
+              <td data-label="Nome"><input type="text" class="nome"></td>
+              <td data-label="Prémio"><input type="number" class="premio" step="0.01" min="0"></td>
+              <td data-label="Deslocação"><input type="number" class="deslocacao" step="0.01" min="0"></td>
+              <td data-label="Diversos"><input type="number" class="diversos" step="0.01" min="0"></td>
+              <td data-label="Total" class="total">0,00</td>
             </tr>
           </tbody>
         </table>
@@ -184,7 +214,7 @@ footer{background:#000;color:#fff;padding:10px 12px;display:flex;justify-content
 /* ---------- Supabase ---------- */
 const SUPABASE_URL='https://prwhifyewscielsopluj.supabase.co';
 const SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InByd2hpZnlld3NjaWVsc29wbHVqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjMwMzA2MzEsImV4cCI6MjA3ODYwNjYzMX0.N8Op_2iUwRFd71YTninoztaInQtVLEnVIwbi2nIHkKg';
-const supabaseClient = supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+const supabaseClient=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 
 /* ---------- Navegação ---------- */
 function showSection(id){
@@ -212,13 +242,6 @@ function atualizarTotais(){
 
 document.addEventListener('input',(e)=>{
   if(e.target.matches('#tabelaRecibosBody input')){
-    atualizarTotais();
-  }
-});
-
-document.addEventListener('click',(e)=>{
-  if(e.target.classList.contains('btn-remover')){
-    e.target.closest('tr').remove();
     atualizarTotais();
   }
 });
@@ -285,7 +308,8 @@ async function enviarRecibo(){
     }catch(err){ console.error(err); alert('Erro no upload do ficheiro: '+err.message); return; }
   }
 
-  const { error }=await supabaseClient.from('recibos').insert([{numero_jogo:numeroJogo,arbitros,total_geral:totalGeral,ficheiro:ficheiroUrl}]);
+  const { error }=await supabaseClient.from('recibos').
+  insert([{numero_jogo:numeroJogo,arbitros,total_geral:totalGeral,ficheiro:ficheiroUrl}]);
   if(error){ console.error(error); alert('Erro: '+error.message); return; }
 
   alert('Recibo enviado com sucesso!');
@@ -296,35 +320,38 @@ async function enviarRecibo(){
 
 async function carregarListaRecibos(){
   try{
-    const { data, error}=await supabaseClient.from('recibos').select('*').order('id',{ascending:false}).limit(200);
+    const { data, error } = await supabaseClient.from('recibos').select('*').order('id',{ascending:false}).limit(200);
     if(error) throw error;
     const div=document.getElementById('listaRecibos');
-    if(!data||data.length===0){ div.innerHTML='<p>Sem recibos registados.</p>'; return; }
+    if(!data || data.length===0){ div.innerHTML='<p>Sem recibos registados.</p>'; return; }
+
     let html='';
     data.forEach(r=>{
       html+=`<div style="border:1px solid #ccc;padding:6px;margin:6px 0;border-radius:6px">
-      <strong>Jogo Nº:</strong> ${r.numero_jogo} | <strong>Total Geral:</strong> ${r.total_geral.toFixed(2).replace('.',',')} €
-      ${r.ficheiro?` | <a href="${r.ficheiro}" target="_blank">Ver Ficheiro</a>`:''}
-      <ul>${r.arbitros.map(a=>`<li>${escapeHtml(a.cargo)}: ${escapeHtml(a.nome)} | Total: ${a.total.toFixed(2).replace('.',',')} €</li>`).join('')}</ul>
+        <strong>Jogo Nº:</strong> ${r.numero_jogo} | <strong>Total Geral:</strong> ${r.total_geral.toFixed(2).replace('.',',')} €
+        ${r.ficheiro?` | <a href="${r.ficheiro}" target="_blank">Ver Ficheiro</a>`:''}
+        <ul>${r.arbitros.map(a=>`<li>${escapeHtml(a.cargo)}: ${escapeHtml(a.nome)} | Total: ${a.total.toFixed(2).replace('.',',')} €</li>`).join('')}</ul>
       </div>`;
     });
     div.innerHTML=html;
+
   }catch(e){ console.error(e); document.getElementById('listaRecibos').innerHTML='<p>Erro ao carregar recibos.</p>'; }
 }
 
 /* ---------- COMUNICADOS ---------- */
 async function carregarComunicados(){
   try{
-    const { data, error}=await supabaseClient.from('comunicados').select('*').order('id',{ascending:false}).limit(50);
+    const { data, error } = await supabaseClient.from('comunicados').select('*').order('id',{ascending:false}).limit(50);
     if(error) throw error;
     const div=document.getElementById('listaComunicados');
-    if(!data||data.length===0){ div.innerHTML='<p>Sem comunicados.</p>'; return; }
+    if(!data || data.length===0){ div.innerHTML='<p>Sem comunicados.</p>'; return; }
+
     let html='<ul>';
-    data.forEach(c=>html+=`<li><strong>${escapeHtml(c.titulo)}</strong> (${c.data})<br>${escapeHtml(c.mensagem)}</li>`);
+    data.forEach(c => html+=`<li><strong>${escapeHtml(c.titulo)}</strong> (${c.data})<br>${escapeHtml(c.mensagem)}</li>`);
     html+='</ul>';
     div.innerHTML=html;
 
-  }catch(e){ console.error(e); div.innerHTML='<p>Erro ao carregar comunicados.</p>'; }
+  }catch(e){ console.error(e); document.getElementById('listaComunicados').innerHTML='<p>Erro ao carregar comunicados.</p>'; }
 }
 
 /* ---------- ESCAPE HTML ---------- */
@@ -338,7 +365,7 @@ function enviarEmail(){
   const email=document.getElementById('emailRemetente').value.trim();
   const assunto=document.getElementById('assuntoEmail').value.trim();
   const mensagem=document.getElementById('mensagemEmail').value.trim();
-  if(!email||!assunto||!mensagem){ alert('Preencha todos os campos'); return; }
+  if(!email || !assunto || !mensagem){ alert('Preencha todos os campos'); return; }
   alert('Email enviado com sucesso (simulação).');
   document.getElementById('emailForm').reset();
 }
@@ -354,3 +381,4 @@ document.addEventListener('DOMContentLoaded',()=>{
 
 </body>
 </html>
+
