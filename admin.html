@@ -4,49 +4,101 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Admin CAD ABVC</title>
+<style>
+body { margin:0; font-family: Arial, sans-serif; background:#fff; color:#000;}
+nav { display:flex; justify-content:center; gap:1rem; background:#444; flex-wrap: wrap;}
+nav a { color:#fff; text-decoration:none; font-weight:bold; padding:1rem; cursor:pointer;}
+section { display:none; padding:1rem; }
+section.active { display:block; }
+h2 { margin-top:0; }
+form { background:#f8f8f8; padding:1rem; border-radius:8px; margin-bottom:1rem; max-width:400px;}
+label { display:block; margin-top:0.5rem; }
+input, select, textarea, button { width:100%; padding:0.5rem; margin-top:0.3rem; }
+table { width:100%; border-collapse: collapse; table-layout: fixed; margin-top:1rem;}
+th, td { border:1px solid #ccc; padding:0.5rem; text-align:center; word-wrap:break-word;}
+footer { background:#333; color:#fff; padding:0.5rem 1rem; display:flex; justify-content:space-between; font-size:0.9rem;}
+footer a { color:#fff; text-decoration:none; }
+</style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.28.0/dist/supabase.min.js"></script>
 </head>
 <body>
+
+<nav>
+<a onclick="voltarIndex()">Home</a>
+<a onclick="showSection('adminContent')">Admin</a>
+</nav>
+
+<section id="loginSection" class="active">
 <h2>Login Admin</h2>
 <form id="loginForm">
 <label>Email:</label><input type="email" id="emailAdmin" required>
 <label>Senha:</label><input type="password" id="senhaAdmin" required>
 <button type="button" onclick="login()">Entrar</button>
 </form>
-<div id="adminContent" style="display:none">
+</section>
+
+<section id="adminContent">
 <h2>Painel Admin</h2>
 <button onclick="carregarDispensas()">Ver Dispensas</button>
 <button onclick="carregarRecibos()">Ver Recibos</button>
 <div id="listaAdmin"></div>
-</div>
+</section>
+
+<footer>
+<span>R. Conselheiro Arnaldo Norton de Matos 31, 4990-081 Pte. de Lima</span>
+</footer>
 
 <script>
 const supabaseUrl = 'https://prwhifyewscielsopluj.supabase.co';
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJIUzI1NiIsInJlZiI6InByd2hpZnlld3NjaWVsc29wbHVqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjMwMzA2MzEsImV4cCI6MjA3ODYwNjYzMX0.N8Op_2iUwRFd71YTninoztaInQtVLEnVIwbi2nIHkKg';
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InByd2hpZnlld3NjaWVsc29wbHVqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjMwMzA2MzEsImV4cCI6MjA3ODYwNjYzMX0.N8Op_2iUwRFd71YTninoztaInQtVLEnVIwbi2nIHkKg';
 const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+
+function showSection(id){
+document.querySelectorAll('section').forEach(s=>s.classList.remove('active'));
+document.getElementById(id).classList.add('active');
+}
+
+function voltarIndex(){
+window.location.href = 'index.html';
+}
 
 async function login(){
 const email=document.getElementById('emailAdmin').value;
 const senha=document.getElementById('senhaAdmin').value;
-const { data, error } = await supabase.auth.signInWithPassword({email,password:senha});
-if(error){ alert('Erro login: '+error.message); return;}
-document.getElementById('loginForm').style.display='none';
-document.getElementById('adminContent').style.display='block';
+
+// Login simples com Supabase
+const { data, error } = await supabase.auth.signInWithPassword({ email: email, password: senha });
+if(error){ alert('Erro login: '+error.message); return; }
+alert('Login efetuado com sucesso!');
+document.getElementById('loginSection').style.display='none';
+showSection('adminContent');
 }
 
 async function carregarDispensas(){
 const { data, error } = await supabase.from('dispensa').select('*');
 if(error){ alert(error.message); return; }
 const div=document.getElementById('listaAdmin');
-div.innerHTML='<h3>Dispensas</h3><pre>'+JSON.stringify(data,null,2)+'</pre>';
+let html='<h3>Dispensas</h3><table><tr><th>Nome</th><th>Data</th><th>Período</th><th>Motivo</th></tr>';
+data.forEach(d=>{ html+=`<tr><td>${d.nome}</td><td>${d.data}</td><td>${d.periodo}</td><td>${d.motivo}</td></tr>`; });
+html+='</table>';
+div.innerHTML=html;
 }
 
 async function carregarRecibos(){
 const { data, error } = await supabase.from('recibos').select('*');
 if(error){ alert(error.message); return; }
 const div=document.getElementById('listaAdmin');
-div.innerHTML+='<h3>Recibos</h3><pre>'+JSON.stringify(data,null,2)+'</pre>';
+let html='<h3>Recibos</h3>';
+data.forEach(r=>{
+html+=`<div style="border:1px solid #ccc;padding:0.5rem;margin-bottom:0.5rem;">
+<p><strong>Nº Jogo:</strong> ${r.numeroJogo}</p>
+<p><strong>Arbitros:</strong> ${JSON.stringify(r.arbitros)}</p>`;
+if(r.ficheiroUrl) html+=`<p><a href="${r.ficheiroUrl}" target="_blank">Ver ficheiro</a></p>`;
+html+='</div>';
+});
+div.innerHTML=html;
 }
 </script>
+
 </body>
 </html>
