@@ -6,7 +6,7 @@
 <title>CAD ABVC - Conselho de Arbitragem de Viana do Castelo</title>
 <style>
 body { margin:0; font-family: Arial, sans-serif; background:#fff; color:#000;}
-nav { display:flex; justify-content:center; gap:1rem; background:#444; }
+nav { display:flex; justify-content:center; gap:1rem; background:#444; flex-wrap: wrap;}
 nav a { color:#fff; text-decoration:none; font-weight:bold; padding:1rem; cursor:pointer;}
 section { display:none; padding:1rem; }
 section.active { display:block; }
@@ -20,6 +20,14 @@ th, td { border:1px solid #ccc; padding:0.5rem; text-align:center; word-wrap:bre
 .total { font-weight:bold; }
 footer { background:#333; color:#fff; padding:0.5rem 1rem; display:flex; justify-content:space-between; align-items:center; font-size:0.9rem;}
 footer a { color:#fff; text-decoration:none; }
+@media(max-width:600px){
+ nav { flex-direction: column; }
+ table, thead, tbody, th, td, tr { display:block; }
+ tr { margin-bottom:10px; }
+ th { background:#eee; }
+ td { border:none; position: relative; padding-left:50%; }
+ td::before { content: attr(data-label); position: absolute; left:0; width:45%; padding-left:10px; font-weight:bold; text-align:left; }
+}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.28.0/dist/supabase.min.js"></script>
 </head>
@@ -35,9 +43,9 @@ footer a { color:#fff; text-decoration:none; }
 </nav>
 
 <section id="home" class="active">
-<img src="abvc_cad.png" alt="AB Viana do Castelo" class="home-img">
+<img src="cad_abvc.png" alt="AB Viana do Castelo" class="home-img">
 <h2>Bem-vindo ao CAD da ABVC</h2>
-
+<p>Use o menu acima para navegar pelas seções.</p>
 </section>
 
 <section id="dispensas">
@@ -111,72 +119,72 @@ const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS
 const supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
 function showSection(id){
-document.querySelectorAll('section').forEach(s=>s.classList.remove('active'));
-document.getElementById(id).classList.add('active');
+  document.querySelectorAll('section').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
 }
 
-// Atualizar totais com vírgula
+// Atualizar totais
 function atualizarTotais(){
-let totalGeral=0;
-const rows=document.querySelectorAll('#recibos table tr');
-rows.forEach((r,i)=>{
-if(i===0) return;
-const premio=parseFloat(r.querySelector('.premio').value.replace(',','.'))||0;
-const desloc=parseFloat(r.querySelector('.deslocacao').value.replace(',','.'))||0;
-const diversos=parseFloat(r.querySelector('.diversos').value.replace(',','.'))||0;
-const total=premio+desloc+diversos;
-r.querySelector('.total').textContent=total.toFixed(2).replace('.',',');
-totalGeral+=total;
-});
-document.getElementById('totalGeral').textContent=totalGeral.toFixed(2).replace('.',',');
+  let totalGeral=0;
+  const rows=document.querySelectorAll('#recibos table tr');
+  rows.forEach((r,i)=>{
+    if(i===0) return;
+    const premio=parseFloat(r.querySelector('.premio').value.replace(',','.'))||0;
+    const desloc=parseFloat(r.querySelector('.deslocacao').value.replace(',','.'))||0;
+    const diversos=parseFloat(r.querySelector('.diversos').value.replace(',','.'))||0;
+    const total=premio+desloc+diversos;
+    r.querySelector('.total').textContent=total.toFixed(2).replace('.',',');
+    totalGeral+=total;
+  });
+  document.getElementById('totalGeral').textContent=totalGeral.toFixed(2).replace('.',',');
 }
 
 document.querySelectorAll('#recibos table tr').forEach((r,i)=>{
-if(i===0) return;
-['.premio','.deslocacao','.diversos'].forEach(cls=>{
-r.querySelector(cls).addEventListener('input', atualizarTotais);
-});
+  if(i===0) return;
+  ['.premio','.deslocacao','.diversos'].forEach(cls=>{
+    r.querySelector(cls).addEventListener('input', atualizarTotais);
+  });
 });
 
 // Envio para Supabase
 async function enviarDispensa(){
-const nome=document.getElementById('nomeDispensa').value;
-const data=document.getElementById('dataDispensa').value;
-const periodo=document.getElementById('periodoDispensa').value;
-const motivo=document.getElementById('motivoDispensa').value;
-const { error } = await supabase.from('dispensa').insert([{nome,data,periodo,motivo}]);
-if(error) alert('Erro ao enviar: '+error.message);
-else alert('Dispensa enviada com sucesso!');
+  const nome=document.getElementById('nomeDispensa').value;
+  const data=document.getElementById('dataDispensa').value;
+  const periodo=document.getElementById('periodoDispensa').value;
+  const motivo=document.getElementById('motivoDispensa').value;
+  const { error } = await supabase.from('dispensa').insert([{nome,data,periodo,motivo}]);
+  if(error) alert('Erro ao enviar: '+error.message);
+  else { alert('Dispensa enviada com sucesso!'); document.getElementById('dispensaForm').reset(); }
 }
 
 async function enviarRecibo(){
-const numeroJogo=document.getElementById('numeroJogo').value;
-const arbitros=[...document.querySelectorAll('#recibos table tr')].slice(1).map(r=>({
-nome:r.querySelector('.nome').value,
-premio:r.querySelector('.premio').value,
-deslocacao:r.querySelector('.deslocacao').value,
-diversos:r.querySelector('.diversos').value,
-total:r.querySelector('.total').textContent
-}));
-const ficheiro=document.getElementById('ficheiroRecibo').files[0];
-let ficheiroUrl=null;
-if(ficheiro){
-const { data, error } = await supabase.storage.from('recibos').upload('public/'+ficheiro.name, ficheiro);
-if(error){ alert('Erro upload ficheiro: '+error.message); return;}
-const { data: urlData } = supabase.storage.from('recibos').getPublicUrl('public/'+ficheiro.name);
-ficheiroUrl=urlData.publicUrl;
-}
-const { error } = await supabase.from('recibos').insert([{numeroJogo,arbitros,ficheiroUrl}]);
-if(error) alert('Erro ao enviar: '+error.message);
-else alert('Recibo enviado com sucesso!');
+  const numeroJogo=document.getElementById('numeroJogo').value;
+  const arbitros=[...document.querySelectorAll('#recibos table tr')].slice(1).map(r=>({
+    nome:r.querySelector('.nome').value,
+    premio:r.querySelector('.premio').value,
+    deslocacao:r.querySelector('.deslocacao').value,
+    diversos:r.querySelector('.diversos').value,
+    total:r.querySelector('.total').textContent
+  }));
+  const ficheiro=document.getElementById('ficheiroRecibo').files[0];
+  let ficheiroUrl=null;
+  if(ficheiro){
+    const { data, error } = await supabase.storage.from('recibos').upload('public/'+ficheiro.name, ficheiro);
+    if(error){ alert('Erro upload ficheiro: '+error.message); return;}
+    const { data: urlData } = supabase.storage.from('recibos').getPublicUrl('public/'+ficheiro.name);
+    ficheiroUrl=urlData.publicUrl;
+  }
+  const { error } = await supabase.from('recibos').insert([{numeroJogo,arbitros,ficheiroUrl}]);
+  if(error) alert('Erro ao enviar: '+error.message);
+  else { alert('Recibo enviado com sucesso!'); document.getElementById('reciboForm').reset(); atualizarTotais(); }
 }
 
 // Envio de email
 function enviarEmail(){
-const email=document.getElementById('emailRemetente').value;
-const assunto=document.getElementById('assuntoEmail').value;
-const msg=document.getElementById('mensagemEmail').value;
-window.location.href=`mailto:arbitragem.abvc@gmail.com?subject=${encodeURIComponent(assunto)}&body=${encodeURIComponent("De: "+email+"\n\n"+msg)}`;
+  const email=document.getElementById('emailRemetente').value;
+  const assunto=document.getElementById('assuntoEmail').value;
+  const msg=document.getElementById('mensagemEmail').value;
+  window.location.href=`mailto:arbitragem.abvc@gmail.com?subject=${encodeURIComponent(assunto)}&body=${encodeURIComponent("De: "+email+"\n\n"+msg)}`;
 }
 </script>
 </body>
