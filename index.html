@@ -6,7 +6,7 @@
 <title>CAD ABVC - Conselho de Arbitragem</title>
 
 <!-- Supabase -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.28.0/dist/supabase.min.js"></script>
 
 <style>
 :root{--accent:#000}
@@ -30,7 +30,6 @@ th,td{border:1px solid #ddd;padding:8px;text-align:center;word-break:break-word}
 footer{background:#000;color:#fff;padding:10px 12px;display:flex;justify-content:space-between;flex-wrap:wrap;font-size:0.9rem}
 .footer-link{color:#fff;text-decoration:none}
 
-/* MOBILE */
 @media(max-width:700px){
   nav{padding:8px}
   table, thead, tbody, th, td, tr{display:block}
@@ -199,7 +198,7 @@ footer{background:#000;color:#fff;padding:10px 12px;display:flex;justify-content
 <script>
 /* ---------- Supabase ---------- */
 const SUPABASE_URL = 'https://prwhifyewscielsopluj.supabase.co';
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InByd2hpZnlld3NjaWVsc29wbHVqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjMwMzA2MzEsImV4cCI6MjA3ODYwNjYzMX0.N8Op_2iUwRFd71YTninoztaInQtVLEnVIwbi2nIHkKg';
+const SUPABASE_KEY = 'SEU_SUPABASE_ANON_KEY';
 const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 /* ---------- Navegação ---------- */
@@ -216,27 +215,18 @@ function showSection(id){
 function atualizarTotais(){
   let totalGeral = 0;
   document.querySelectorAll('#tabelaRecibosBody tr').forEach(row => {
-    const premioEl = row.querySelector('.premio');
-    const deslocEl = row.querySelector('.deslocacao');
-    const diversosEl = row.querySelector('.diversos');
-    const totalTd = row.querySelector('.total');
-
-    const premio = parseFloat((premioEl.value || 0).toString().replace(',', '.')) || 0;
-    const desloc = parseFloat((deslocEl.value || 0).toString().replace(',', '.')) || 0;
-    const diversos = parseFloat((diversosEl.value || 0).toString().replace(',', '.')) || 0;
-    const total = premio + desloc + diversos;
-
-    if(totalTd) totalTd.textContent = total.toFixed(2).replace('.', ',');
+    const premio = parseFloat((row.querySelector('.premio').value||0).toString().replace(',', '.')) || 0;
+    const desloc = parseFloat((row.querySelector('.deslocacao').value||0).toString().replace(',', '.')) || 0;
+    const diversos = parseFloat((row.querySelector('.diversos').value||0).toString().replace(',', '.')) || 0;
+    const total = premio+desloc+diversos;
+    row.querySelector('.total').textContent = total.toFixed(2).replace('.',',');
     totalGeral += total;
   });
-
-  const tg = document.getElementById('totalGeral');
-  if(tg) tg.textContent = totalGeral.toFixed(2).replace('.', ',');
+  document.getElementById('totalGeral').textContent = totalGeral.toFixed(2).replace('.',',');
 }
 
-/* Delegação de evento */
-document.addEventListener('input', (e) => {
-  if(e.target.matches('#tabelaRecibosBody input.premio, #tabelaRecibosBody input.deslocacao, #tabelaRecibosBody input.diversos')){
+document.addEventListener('input', (e)=>{
+  if(e.target.matches('#tabelaRecibosBody input.premio,#tabelaRecibosBody input.deslocacao,#tabelaRecibosBody input.diversos')){
     atualizarTotais();
   }
 });
@@ -244,140 +234,45 @@ document.addEventListener('input', (e) => {
 /* ---------- DISPENSAS ---------- */
 async function enviarDispensa(){
   const nome = document.getElementById('nomeDispensa').value.trim();
-  const dataInicio = document.getElementById('dataInicio').value;
-  const dataFim = document.getElementById('dataFim').value;
+  const data_inicio = document.getElementById('dataInicio').value;
+  const data_fim = document.getElementById('dataFim').value;
   const periodo = document.getElementById('periodo').value;
   const motivo = document.getElementById('motivo').value.trim();
-
-  if(!nome || !dataInicio || !dataFim){
-    alert('Preencha os campos obrigatórios.');
-    return;
-  }
-  if(new Date(dataFim) < new Date(dataInicio)){
-    alert('A data final não pode ser anterior à data inicial.');
-    return;
-  }
-
-  const payload = { nome, data_inicio: dataInicio, data_fim: dataFim, periodo, motivo };
-  const { error } = await supabase.from('dispensas').insert([payload]);
-  if(error){ console.error(error); alert('Erro: '+error.message); return; }
-  alert('Dispensa enviada com sucesso!');
+  if(!nome||!data_inicio||!data_fim){ alert('Preencha os campos obrigatórios.'); return; }
+  if(new Date(data_fim)<new Date(data_inicio)){ alert('Data final não pode ser anterior à inicial.'); return; }
+  const { error } = await supabase.from('dispensas').insert([{nome,data_inicio,data_fim,periodo,motivo}]);
+  if(error){ alert('Erro: '+error.message); return; }
+  alert('Dispensa enviada!');
   document.getElementById('dispensaForm').reset();
   carregarListaDispensas();
 }
 
 async function carregarListaDispensas(){
-  try{
-    const { data, error } = await supabase.from('dispensas').select('*').order('id',{ascending:false}).limit(200);
-    if(error) throw error;
-    const div = document.getElementById('listaDispensas');
-    if(!data || data.length===0){ div.innerHTML = '<p>Sem dispensas registadas.</p>'; return; }
-    let html = '<div class="table-wrap"><table><thead><tr><th>Nome</th><th>Início</th><th>Fim</th><th>Período</th><th>Motivo</th></tr></thead><tbody>';
-    data.forEach(d=>{
-      html += `<tr><td data-label="Nome">${escapeHtml(d.nome)}</td><td data-label="Início">${d.data_inicio||''}</td><td data-label="Fim">${d.data_fim||''}</td><td data-label="Período">${escapeHtml(d.periodo||'')}</td><td data-label="Motivo">${escapeHtml(d.motivo||'')}</td></tr>`;
-    });
-    html += '</tbody></table></div>';
-    div.innerHTML = html;
-  }catch(e){
-    console.error(e);
-    document.getElementById('listaDispensas').innerHTML = '<p>Erro ao carregar dispensas.</p>';
-  }
+  const { data, error } = await supabase.from('dispensas').select('*').order('id',{ascending:false}).limit(200);
+  const div = document.getElementById('listaDispensas');
+  if(error){ div.innerHTML='<p>Erro ao carregar dispensas.</p>'; return; }
+  if(!data||data.length===0){ div.innerHTML='<p>Sem dispensas registadas.</p>'; return; }
+  let html='<div class="table-wrap"><table><thead><tr><th>Nome</th><th>Início</th><th>Fim</th><th>Período</th><th>Motivo</th></tr></thead><tbody>';
+  data.forEach(d=>{
+    html+=`<tr><td data-label="Nome">${escapeHtml(d.nome)}</td><td data-label="Início">${d.data_inicio||''}</td><td data-label="Fim">${d.data_fim||''}</td><td data-label="Período">${escapeHtml(d.periodo||'')}</td><td data-label="Motivo">${escapeHtml(d.motivo||'')}</td></tr>`;
+  });
+  html+='</tbody></table></div>';
+  div.innerHTML=html;
 }
 
 /* ---------- RECIBOS ---------- */
 async function enviarRecibo(){
   const numeroJogo = document.getElementById('numeroJogo').value.trim();
   if(!numeroJogo){ alert('Insira o número do jogo.'); return; }
-
   const rows = [...document.querySelectorAll('#tabelaRecibosBody tr')];
-  const arbitros = [];
-  let totalGeral = 0;
-
-  rows.forEach(r => {
-    const nome = (r.querySelector('.nome').value || '').trim();
-    const premio = parseFloat((r.querySelector('.premio').value || '0').toString().replace(',', '.')) || 0;
-    const desloc = parseFloat((r.querySelector('.deslocacao').value || '0').toString().replace(',', '.')) || 0;
-    const diversos = parseFloat((r.querySelector('.diversos').value || '0').toString().replace(',', '.')) || 0;
-    const total = premio + desloc + diversos;
-    if(nome !== ''){
-      arbitros.push({ cargo: r.children[0].innerText, nome, premio, desloc, diversos, total });
-      totalGeral += total;
-    }
-  });
-
-  if(arbitros.length === 0){ alert('Preencha pelo menos um árbitro com nome.'); return; }
-
-  let ficheiroUrl = null;
-  const ficheiro = document.getElementById('ficheiroRecibo').files[0];
-  if(ficheiro){
-    try{
-      const safeName = `${Date.now()}_${ficheiro.name.replace(/\s+/g,'_')}`;
-      const { error: upErr } = await supabase.storage.from('recibos').upload(`public/${safeName}`, ficheiro);
-      if(upErr) throw upErr;
-      const { data: urlData } = await supabase.storage.from('recibos').getPublicUrl(`public/${safeName}`);
-      ficheiroUrl = urlData?.publicUrl || null;
-    }catch(err){
-      console.error(err);
-      alert('Erro no upload do ficheiro: '+err.message);
-      return;
-    }
-  }
-
-  const { error } = await supabase.from('recibos').insert([{ numero_jogo: numeroJogo, arbitros, total_geral: totalGeral, ficheiro: ficheiroUrl }]);
-  if(error){ console.error(error); alert('Erro: '+error.message); return; }
-  alert('Recibo enviado com sucesso!');
-  document.getElementById('reciboForm').reset();
-  atualizarTotais();
-  carregarListaRecibos();
-}
-
-async function carregarListaRecibos(){
-  try{
-    const { data, error } = await supabase.from('recibos').select('*').order('id',{ascending:false}).limit(200);
-    if(error) throw error;
-    const div = document.getElementById('listaRecibos');
-    if(!data || data.length===0){ div.innerHTML='<p>Sem recibos registados.</p>'; return; }
-    let html = '';
-    data.forEach(r=>{
-      html += `<div style="border:1px solid #ccc;padding:6px;margin:6px 0;border-radius:6px">
-        <strong>Jogo Nº:</strong> ${r.numero_jogo} | <strong>Total Geral:</strong> ${r.total_geral.toFixed(2).replace('.',',')} €
-        ${r.ficheiro ? ` | <a href="${r.ficheiro}" target="_blank">Ver Ficheiro</a>` : ''}
-        <ul>${r.arbitros.map(a=>`<li>${escapeHtml(a.cargo)}: ${escapeHtml(a.nome)} | Total: ${a.total.toFixed(2).replace('.',',')} €</li>`).join('')}</ul>
-      </div>`;
-    });
-    div.innerHTML = html;
-  }catch(e){
-    console.error(e);
-    document.getElementById('listaRecibos').innerHTML = '<p>Erro ao carregar recibos.</p>';
-  }
-}
-
-/* ---------- COMUNICADOS ---------- */
-async function carregarComunicados(){
-  try{
-    const { data, error } = await supabase.from('comunicados').select('*').order('id',{ascending:false}).limit(50);
-    if(error) throw error;
-    const div = document.getElementById('listaComunicados');
-    if(!data || data.length===0){ div.innerHTML='<p>Sem comunicados.</p>'; return; }
-    let html = '<ul>';
-    data.forEach(c=>{
-      html += `<li><strong>${escapeHtml(c.titulo)}</strong> (${c.data})<br>${escapeHtml(c.mensagem)}</li>`;
-    });
-    html += '</ul>';
-    div.innerHTML = html;
-  }catch(e){
-    console.error(e);
-    document.getElementById('listaComunicados').innerHTML='<p>Erro ao carregar comunicados.</p>';
-  }
-}
-carregarComunicados();
-
-/* ---------- EMAIL ---------- */
-function enviarEmail(){ alert('Função de envio de email ainda não implementada.'); }
-
-/* ---------- ESCAPE HTML ---------- */
-function escapeHtml(text){ if(!text) return ''; return text.replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
-</script>
-
-</body>
-</html>
+  const arbitros=[];
+  let total=0;
+  rows.forEach(r=>{
+    const nome = r.querySelector('.nome').value.trim();
+    const premio = parseFloat((r.querySelector('.premio').value||0).toString().replace(',','.'))||0;
+    const desloc = parseFloat((r.querySelector('.deslocacao').value||0).toString().replace(',','.'))||0;
+    const diversos = parseFloat((r.querySelector('.diversos').value||0).toString().replace(',','.'))||0;
+    const t = premio+desloc+diversos;
+    if(nome) arbitros.push({cargo:r.children[0].innerText,nome,premio,desloc,diversos,total:t});
+    total+=t;
+ 
