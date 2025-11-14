@@ -1,222 +1,116 @@
 <!DOCTYPE html>
 <html lang="pt">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Admin CAD ABVC</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.28.0/dist/supabase.min.js"></script>
 
 <style>
-body{
-    margin:0;
-    font-family:Arial, sans-serif;
-    background:#fff;
-    color:#000;
-    padding:20px;
-}
-
-h2{ margin-top:0; }
-
-form{
-    background:#f1f1f1;
-    padding:15px;
-    border-radius:10px;
-    max-width:400px;
-}
-
-input{
-    width:100%;
-    padding:10px;
-    margin-top:5px;
-}
-
-button{
-    padding:10px 20px;
-    margin-top:10px;
-    cursor:pointer;
-}
-
-#adminPanel{
-    display:none;
-}
-
-table{
-    width:100%;
-    border-collapse: collapse;
-    margin-top:20px;
-}
-
-th, td{
-    border:1px solid #ccc;
-    padding:8px;
-    text-align:center;
-}
-
-th{
-    background:black;
-    color:white;
-}
-
-tr:nth-child(even){
-    background:#f9f9f9;
-}
-
-@media(max-width:600px){
-    table, thead, tbody, th, td, tr{
-        display:block;
-    }
-    tr{
-        margin-bottom:15px;
-    }
-    td{
-        text-align:left;
-        position:relative;
-        padding-left:50%;
-    }
-    td:before{
-        position:absolute;
-        left:10px;
-        font-weight:bold;
-        content: attr(data-label);
-    }
-}
+body{margin:0;font-family:Arial,Helvetica,sans-serif;background:#f5f5f5;color:#000}
+nav{display:flex;gap:.5rem;justify-content:center;background:#222;padding:8px;flex-wrap:wrap}
+nav a{color:#fff;text-decoration:none;padding:.6rem .8rem;font-weight:700;border-radius:6px;cursor:pointer}
+nav a:hover{background:#333}
+.container{max-width:1200px;margin:14px auto;padding:0 12px}
+h2{margin-top:0}
+.table-wrap{overflow-x:auto;margin-top:12px}
+table{width:100%;border-collapse:collapse}
+th,td{border:1px solid #ddd;padding:8px;text-align:center;word-break:break-word}
+th{background:#222;color:#fff}
+button{background:#222;color:#fff;border:none;padding:6px 12px;border-radius:6px;cursor:pointer}
+button:hover{background:#333}
 </style>
 </head>
 <body>
 
-<h2>Admin – CAD ABVC</h2>
+<nav>
+  <a onclick="showSection('dispensas')">Dispensas</a>
+  <a onclick="showSection('recibos')">Recibos</a>
+</nav>
 
-<!-- LOGIN -->
-<form id="loginForm">
-    <label>Email:</label>
-    <input type="email" id="email" required>
+<div class="container">
 
-    <label>Senha:</label>
-    <input type="password" id="senha" required>
+  <!-- DISPENSAS ADMIN -->
+  <section id="dispensas">
+    <h2>Dispensas Registradas</h2>
+    <div id="adminDispensas"></div>
+  </section>
 
-    <button type="button" onclick="login()">Entrar</button>
-</form>
+  <!-- RECIBOS ADMIN -->
+  <section id="recibos" style="display:none">
+    <h2>Recibos Submetidos</h2>
+    <div id="adminRecibos"></div>
+  </section>
 
-<!-- PAINEL ADMIN -->
-<div id="adminPanel">
-    <h2>Painel do Administrador</h2>
-
-    <button onclick="carregarDispensas()">📌 Ver Dispensas</button>
-    <button onclick="carregarRecibos()">📄 Ver Recibos</button>
-
-    <div id="conteudoAdmin"></div>
 </div>
 
-
 <script>
-// --------------------------------------------
-// CONFIGURAÇÃO SUPABASE
-// --------------------------------------------
-const supabaseUrl = "https://prwhifyewscielsopluj.supabase.co";
-const supabaseKey =
-"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InByd2hpZnlld3NjaWVsc29wbHVqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjMwMzA2MzEsImV4cCI6MjA3ODYwNjYzMX0.N8Op_2iUwRFd71YTninoztaInQtVLEnVIwbi2nIHkKg";
+/* ---------- Supabase ---------- */
+const SUPABASE_URL = 'https://prwhifyewscielsopluj.supabase.co';
+const SUPABASE_KEY = 'SEU_SUPABASE_SERVICE_KEY'; // usar service role key para admin
+const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
-
-
-// --------------------------------------------
-// LOGIN
-// --------------------------------------------
-async function login(){
-    const email = document.getElementById("email").value;
-    const senha = document.getElementById("senha").value;
-
-    const { data, error } = await supabaseClient.auth.signInWithPassword({
-        email: email,
-        password: senha
-    });
-
-    if(error){
-        alert("Erro no login: " + error.message);
-        return;
-    }
-
-    document.getElementById("loginForm").style.display = "none";
-    document.getElementById("adminPanel").style.display = "block";
+/* ---------- Navegação ---------- */
+function showSection(id){
+  document.querySelectorAll('section').forEach(s=>s.style.display='none');
+  document.getElementById(id).style.display='block';
+  if(id==='dispensas') carregarDispensasAdmin();
+  if(id==='recibos') carregarRecibosAdmin();
 }
 
+/* ---------- Escapar HTML ---------- */
+function escapeHtml(str){return str.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
 
-// --------------------------------------------
-// CARREGAR DISPENSAS
-// --------------------------------------------
-async function carregarDispensas(){
-    const { data, error } = await supabaseClient.from("dispensas").select("*");
+/* ---------- DISPENSAS ADMIN ---------- */
+async function carregarDispensasAdmin(){
+  const { data, error } = await supabase.from('dispensas').select('*').order('id',{ascending:false}).limit(500);
+  const div = document.getElementById('adminDispensas');
+  if(error){ div.innerHTML='<p>Erro ao carregar dispensas.</p>'; return; }
+  if(!data||data.length===0){ div.innerHTML='<p>Sem dispensas.</p>'; return; }
 
-    if(error){
-        alert("Erro ao carregar dispensas: " + error.message);
-        return;
-    }
-
-    let html = `
-    <h3>Dispensas</h3>
-    <table>
-        <tr>
-            <th>Nome</th>
-            <th>Início</th>
-            <th>Fim</th>
-            <th>Período</th>
-            <th>Motivo</th>
-        </tr>`;
-
-    data.forEach(d=>{
-        html += `
-        <tr>
-            <td data-label="Nome">${d.nome}</td>
-            <td data-label="Início">${d.data_inicio}</td>
-            <td data-label="Fim">${d.data_fim}</td>
-            <td data-label="Período">${d.periodo}</td>
-            <td data-label="Motivo">${d.motivo||""}</td>
-        </tr>`;
-    });
-
-    html += `</table>`;
-
-    document.getElementById("conteudoAdmin").innerHTML = html;
+  let html='<div class="table-wrap"><table><thead><tr><th>ID</th><th>Nome</th><th>Início</th><th>Fim</th><th>Período</th><th>Motivo</th><th>Criado Em</th></tr></thead><tbody>';
+  data.forEach(d=>{
+    html+=`<tr>
+      <td>${d.id}</td>
+      <td>${escapeHtml(d.nome)}</td>
+      <td>${d.data_inicio||''}</td>
+      <td>${d.data_fim||''}</td>
+      <td>${escapeHtml(d.periodo||'')}</td>
+      <td>${escapeHtml(d.motivo||'')}</td>
+      <td>${d.criado_em?new Date(d.criado_em).toLocaleString():""}</td>
+    </tr>`;
+  });
+  html+='</tbody></table></div>';
+  div.innerHTML=html;
 }
 
+/* ---------- RECIBOS ADMIN ---------- */
+async function carregarRecibosAdmin(){
+  const { data, error } = await supabase.from('recibos').select('*').order('id',{ascending:false}).limit(500);
+  const div = document.getElementById('adminRecibos');
+  if(error){ div.innerHTML='<p>Erro ao carregar recibos.</p>'; return; }
+  if(!data||data.length===0){ div.innerHTML='<p>Sem recibos.</p>'; return; }
 
-// --------------------------------------------
-// CARREGAR RECIBOS
-// --------------------------------------------
-async function carregarRecibos(){
-    const { data, error } = await supabaseClient.from("recibos").select("*");
-
-    if(error){
-        alert("Erro ao carregar recibos: " + error.message);
-        return;
-    }
-
-    let html = `
-    <h3>Recibos</h3>
-    <table>
-        <tr>
-            <th>Nº Jogo</th>
-            <th>Árbitros</th>
-            <th>Ficheiro</th>
-        </tr>`;
-
-    data.forEach(r=>{
-        html += `
-        <tr>
-            <td data-label="Jogo">${r.numero_jogo}</td>
-            <td data-label="Árbitros"><pre>${JSON.stringify(r.arbitros,null,2)}</pre></td>
-            <td data-label="Ficheiro">
-                ${r.ficheiro_url ? `<a href="${r.ficheiro_url}" target="_blank">Abrir</a>` : "—"}
-            </td>
-        </tr>`;
-    });
-
-    html += `</table>`;
-
-    document.getElementById("conteudoAdmin").innerHTML = html;
+  let html='<div class="table-wrap"><table><thead><tr><th>ID</th><th>Número Jogo</th><th>Árbitros</th><th>Total Geral (€)</th><th>Ficheiro</th><th>Criado Em</th></tr></thead><tbody>';
+  data.forEach(r=>{
+    const arbHtml = r.arbitros.map(a=>`${escapeHtml(a.cargo)}: ${escapeHtml(a.nome)} - Total: ${a.total.toFixed(2).replace('.',',')}€`).join('<br>');
+    let fileLink = r.foto_path ? `<a href="https://prwhifyewscielsopluj.supabase.co/storage/v1/object/public/recibos/${encodeURIComponent(r.foto_path)}" target="_blank">Ver</a>` : '-';
+    html+=`<tr>
+      <td>${r.id}</td>
+      <td>${escapeHtml(r.numero_jogo)}</td>
+      <td>${arbHtml}</td>
+      <td>${r.total.toFixed(2).replace('.',',')}</td>
+      <td>${fileLink}</td>
+      <td>${r.criado_em?new Date(r.criado_em).toLocaleString():""}</td>
+    </tr>`;
+  });
+  html+='</tbody></table></div>';
+  div.innerHTML=html;
 }
 
+/* ---------- Inicial ---------- */
+carregarDispensasAdmin();
 </script>
 
 </body>
