@@ -1,8 +1,312 @@
-        <ul>`;
-      r.arbitros.forEach(a=>{
-        html+=`<li>${escapeHtml(a.cargo)}: ${escapeHtml(a.nome)} | Prémio: ${a.premio.toFixed(2).replace('.',',')} € | Deslocação: ${a.desloc.toFixed(2).replace('.',',')} € | Diversos: ${a.diversos.toFixed(2).replace('.',',')} € | Total: ${a.total.toFixed(2).replace('.',',')} €</li>`;
-      });
-      html+='</ul></div>';
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>CAD ABVC - Conselho de Arbitragem Distrital</title>
+
+<!-- Supabase -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+:root{--accent:#000}
+body{margin:0;font-family:Arial,Helvetica,sans-serif;background:#fff;color:#000;line-height:1.4}
+nav{display:flex;gap:.5rem;justify-content:center;background:#222;padding:8px;flex-wrap:wrap}
+nav a{color:#fff;text-decoration:none;padding:.6rem .8rem;font-weight:700;border-radius:6px;cursor:pointer}
+nav a:hover{background:#333}
+.container{max-width:1100px;margin:14px auto;padding:0 12px}
+.home-img{width:100%;height:auto;border-radius:6px;margin-top:10px}
+section{display:none;padding:12px 0}
+section.active{display:block}
+form{background:#f8f8f8;padding:12px;border-radius:8px;margin-bottom:12px}
+label{display:block;margin-top:8px;font-weight:600}
+input[type="text"], input[type="date"], input[type="email"], input[type="number"], select, textarea{width:100%;padding:8px;border:1px solid #ccc;border-radius:6px;box-sizing:border-box;margin-top:6px}
+textarea{min-height:80px}
+button{background:var(--accent);color:#fff;border:none;padding:10px 14px;border-radius:6px;cursor:pointer;margin-top:10px}
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;margin-top:10px}
+th,td{border:1px solid #ddd;padding:8px;text-align:center;word-break:break-word}
+.total{font-weight:700}
+footer{background:#000;color:#fff;padding:10px 12px;display:flex;justify-content:space-between;flex-wrap:wrap;font-size:0.9rem}
+.footer-link{color:#fff;text-decoration:none}
+
+/* Botão remover pequeno vermelho */
+.btn-remover{
+  background:red;
+  color:white;
+  border:none;
+  border-radius:50%;
+  width:20px;
+  height:20px;
+  font-weight:bold;
+  cursor:pointer;
+  line-height:18px;
+  padding:0;
+}
+
+/* MOBILE */
+@media(max-width:700px){
+  nav{padding:8px}
+  table, thead, tbody, th, td, tr{display:block}
+  tr{margin-bottom:12px;border:1px solid #eee;padding:8px}
+  td{border:none;padding-left:50%;position:relative;text-align:left}
+  td::before{content:attr(data-label);position:absolute;left:8px;width:45%;font-weight:700}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a onclick="showSection('home')">Home</a>
+  <a onclick="showSection('dispensas')">Dispensas</a>
+  <a onclick="showSection('recibos')">Recibos</a>
+  <a onclick="showSection('comunicados')">Comunicados</a>
+  <a onclick="showSection('calendario')">Calendário ABVC</a>
+  <a onclick="showSection('contactos')">Contactos</a>
+</nav>
+
+<div class="container">
+
+  <!-- HOME -->
+  <section id="home" class="active">
+    <img src="abvc_cad.png" alt="AB Viana do Castelo" class="home-img">
+    <h2>Bem-vindo ao CAD da ABVC</h2>
+    <p>Use o menu para registar dispensas, submeter recibos, consultar comunicados e consultar o calendário.</p>
+  </section>
+
+  <!-- DISPENSAS -->
+  <section id="dispensas">
+    <h2>Registo de Dispensas</h2>
+    <form id="dispensaForm">
+      <label>Nome</label>
+      <input type="text" id="nomeDispensa" required>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        <div>
+          <label>Data Inicial</label>
+          <input type="date" id="dataInicio" required>
+        </div>
+        <div>
+          <label>Data Final</label>
+          <input type="date" id="dataFim" required>
+        </div>
+      </div>
+      <label>Período</label>
+      <select id="periodo" required>
+        <option value="Integral">Integral</option>
+        <option value="Manhã">Parte da Manhã</option>
+        <option value="Tarde">Parte da Tarde</option>
+        <option value="Noite">Parte da Noite</option>
+      </select>
+      <label>Motivo (opcional)</label>
+      <textarea id="motivo"></textarea>
+      <button type="button" onclick="enviarDispensa()">Enviar Dispensa</button>
+    </form>
+    <div id="listaDispensas"></div>
+  </section>
+
+  <!-- RECIBOS -->
+  <section id="recibos">
+    <h2>Submissão de Recibos</h2>
+    <form id="reciboForm">
+      <label>Nº do Jogo</label>
+      <input type="text" id="numeroJogo" required>
+
+      <div class="table-wrap">
+        <table id="tabelaRecibos">
+          <thead>
+            <tr>
+              <th>Cargo</th>
+              <th>Nome</th>
+              <th>Prémio (€)</th>
+              <th>Deslocação (€)</th>
+              <th>Diversos (€)</th>
+              <th>Total (€)</th>
+              <th>Remover</th>
+            </tr>
+          </thead>
+          <tbody id="tabelaRecibosBody">
+            <tr>
+              <td data-label="Cargo">Árbitro Principal</td>
+              <td data-label="Nome"><input type="text" class="nome"></td>
+              <td data-label="Prémio"><input type="number" class="premio" step="0.01" min="0"></td>
+              <td data-label="Deslocação"><input type="number" class="deslocacao" step="0.01" min="0"></td>
+              <td data-label="Diversos"><input type="number" class="diversos" step="0.01" min="0"></td>
+              <td data-label="Total" class="total">0,00</td>
+              <td data-label="Remover"><button type="button" class="btn-remover">X</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Total Geral (€): <span id="totalGeral">0,00</span></h3>
+      <label>Upload Recibo (PDF ou Imagem)</label>
+      <input type="file" id="ficheiroRecibo" accept=".pdf,.jpg,.jpeg,.png">
+      <button type="button" onclick="enviarRecibo()">Enviar Recibo</button>
+    </form>
+    <div id="listaRecibos"></div>
+  </section>
+
+  <!-- COMUNICADOS -->
+  <section id="comunicados">
+    <h2>Comunicados</h2>
+    <div id="listaComunicados">—</div>
+  </section>
+
+  <!-- CALENDÁRIO -->
+  <section id="calendario">
+    <h2>Calendário ABVC</h2>
+    <iframe src="https://www.fpb.pt/calendario/associacao_17/?associacao=17&epoca=2025/2026" style="width:100%;height:600px;border:0"></iframe>
+  </section>
+
+  <!-- CONTACTOS -->
+  <section id="contactos">
+    <h2>Contactos</h2>
+    <p><a href="https://wa.me/351926166077" target="_blank">Enviar WhatsApp</a></p>
+    <form id="emailForm">
+      <label>Seu Email</label>
+      <input type="email" id="emailRemetente">
+      <label>Assunto</label>
+      <input type="text" id="assuntoEmail">
+      <label>Mensagem</label>
+      <textarea id="mensagemEmail"></textarea>
+      <button type="button" onclick="enviarEmail()">Enviar Email</button>
+    </form>
+  </section>
+
+</div>
+
+<footer>
+  <span>R. Conselheiro Arnaldo Norton de Matos 31, 4990-081 Pte. de Lima</span>
+  <span><a class="footer-link" href="admin.html">Admin</a></span>
+</footer>
+
+<script>
+/* ---------- Supabase ---------- */
+const SUPABASE_URL='https://prwhifyewscielsopluj.supabase.co';
+const SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InByd2hpZnlld3NjaWVsc29wbHVqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjMwMzA2MzEsImV4cCI6MjA3ODYwNjYzMX0.N8Op_2iUwRFd71YTninoztaInQtVLEnVIwbi2nIHkKg';
+const supabase=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+
+/* ---------- Navegação ---------- */
+function showSection(id){
+  document.querySelectorAll('section').forEach(s=>s.classList.remove('active'));
+  const el=document.getElementById(id);
+  if(el) el.classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+  if(id==='dispensas') carregarListaDispensas();
+  if(id==='recibos') carregarListaRecibos();
+}
+
+/* ---------- Totais ---------- */
+function atualizarTotais(){
+  let totalGeral=0;
+  document.querySelectorAll('#tabelaRecibosBody tr').forEach(row=>{
+    const premio=parseFloat((row.querySelector('.premio').value||0).toString().replace(',', '.'))||0;
+    const desloc=parseFloat((row.querySelector('.deslocacao').value||0).toString().replace(',', '.'))||0;
+    const diversos=parseFloat((row.querySelector('.diversos').value||0).toString().replace(',', '.'))||0;
+    const total=premio+desloc+diversos;
+    row.querySelector('.total').textContent=total.toFixed(2).replace('.',',');
+    totalGeral+=total;
+  });
+  document.getElementById('totalGeral').textContent=totalGeral.toFixed(2).replace('.',',');
+}
+
+document.addEventListener('input',(e)=>{
+  if(e.target.matches('#tabelaRecibosBody input')){
+    atualizarTotais();
+  }
+});
+
+document.addEventListener('click',(e)=>{
+  if(e.target.classList.contains('btn-remover')){
+    e.target.closest('tr').remove();
+    atualizarTotais();
+  }
+});
+
+/* ---------- DISPENSAS ---------- */
+async function enviarDispensa(){
+  const nome=document.getElementById('nomeDispensa').value.trim();
+  const dataInicio=document.getElementById('dataInicio').value;
+  const dataFim=document.getElementById('dataFim').value;
+  const periodo=document.getElementById('periodo').value;
+  const motivo=document.getElementById('motivo').value.trim();
+  if(!nome||!dataInicio||!dataFim){ alert('Preencha os campos obrigatórios.'); return; }
+  if(new Date(dataFim)<new Date(dataInicio)){ alert('Data final não pode ser anterior à inicial.'); return; }
+  const { error }=await supabase.from('dispensas').insert([{nome,data_inicio:dataInicio,data_fim:dataFim,periodo,motivo}]);
+  if(error){ console.error(error); alert('Erro: '+error.message); return; }
+  alert('Dispensa enviada com sucesso!');
+  document.getElementById('dispensaForm').reset();
+  carregarListaDispensas();
+}
+
+async function carregarListaDispensas(){
+  try{
+    const { data, error }=await supabase.from('dispensas').select('*').order('id',{ascending:false}).limit(200);
+    if(error) throw error;
+    const div=document.getElementById('listaDispensas');
+    if(!data||data.length===0){ div.innerHTML='<p>Sem dispensas registadas.</p>'; return; }
+    let html='<div class="table-wrap"><table><thead><tr><th>Nome</th><th>Início</th><th>Fim</th><th>Período</th><th>Motivo</th></tr></thead><tbody>';
+    data.forEach(d=>html+=`<tr><td data-label="Nome">${escapeHtml(d.nome)}</td><td data-label="Início">${d.data_inicio||''}</td><td data-label="Fim">${d.data_fim||''}</td><td data-label="Período">${escapeHtml(d.periodo||'')}</td><td data-label="Motivo">${escapeHtml(d.motivo||'')}</td></tr>`);
+    html+='</tbody></table></div>';
+    div.innerHTML=html;
+  }catch(e){ console.error(e); document.getElementById('listaDispensas').innerHTML='<p>Erro ao carregar dispensas.</p>'; }
+}
+
+/* ---------- RECIBOS ---------- */
+async function enviarRecibo(){
+  const numeroJogo=document.getElementById('numeroJogo').value.trim();
+  if(!numeroJogo){ alert('Insira o número do jogo.'); return; }
+
+  const rows=[...document.querySelectorAll('#tabelaRecibosBody tr')];
+  const arbitros=[];
+  let totalGeral=0;
+
+  rows.forEach(r=>{
+    const nome=r.querySelector('.nome').value.trim();
+    const premio=parseFloat((r.querySelector('.premio').value||0).toString().replace(',', '.'))||0;
+    const desloc=parseFloat((r.querySelector('.deslocacao').value||0).toString().replace(',', '.'))||0;
+    const diversos=parseFloat((r.querySelector('.diversos').value||0).toString().replace(',', '.'))||0;
+    const total=premio+desloc+diversos;
+    if(nome!==''){
+      arbitros.push({cargo:r.children[0].innerText,nome,premio,desloc,diversos,total});
+      totalGeral+=total;
+    }
+  });
+
+  let ficheiroUrl=null;
+  const ficheiro=document.getElementById('ficheiroRecibo').files[0];
+  if(ficheiro){
+    try{
+      const safeName=`${Date.now()}_${ficheiro.name.replace(/\s+/g,'_')}`;
+      const { error: upErr}=await supabase.storage.from('recibos').upload(`public/${safeName}`,ficheiro);
+      if(upErr) throw upErr;
+      const { data: urlData}=await supabase.storage.from('recibos').getPublicUrl(`public/${safeName}`);
+      ficheiroUrl=urlData?.publicUrl||null;
+    }catch(err){ console.error(err); alert('Erro no upload do ficheiro: '+err.message); return; }
+  }
+
+  const { error }=await supabase.from('recibos').insert([{numero_jogo:numeroJogo,arbitros,total_geral:totalGeral,ficheiro:ficheiroUrl}]);
+  if(error){ console.error(error); alert('Erro: '+error.message); return; }
+
+  alert('Recibo enviado com sucesso!');
+  document.getElementById('reciboForm').reset();
+  atualizarTotais();
+  carregarListaRecibos();
+}
+
+async function carregarListaRecibos(){
+  try{
+    const { data, error}=await supabase.from('recibos').select('*').order('id',{ascending:false}).limit(200);
+    if(error) throw error;
+    const div=document.getElementById('listaRecibos');
+    if(!data||data.length===0){ div.innerHTML='<p>Sem recibos registados.</p>'; return; }
+    let html='';
+    data.forEach(r=>{
+      html+=`<div style="border:1px solid #ccc;padding:6px;margin:6px 0;border-radius:6px">
+      <strong>Jogo Nº:</strong> ${r.numero_jogo} | <strong>Total Geral:</strong> ${r.total_geral.toFixed(2).replace('.',',')} €
+      ${r.ficheiro?` | <a href="${r.ficheiro}" target="_blank">Ver Ficheiro</a>`:''}
+      <ul>${r.arbitros.map(a=>`<li>${escapeHtml(a.cargo)}: ${escapeHtml(a.nome)} | Total: ${a.total.toFixed(2).replace('.',',')} €</li>`).join('')}</ul>
+      </div>`;
     });
     div.innerHTML=html;
   }catch(e){ console.error(e); document.getElementById('listaRecibos').innerHTML='<p>Erro ao carregar recibos.</p>'; }
@@ -11,36 +315,37 @@
 /* ---------- COMUNICADOS ---------- */
 async function carregarComunicados(){
   try{
-    const { data, error } = await supabase.from('comunicados').select('*').order('id',{ascending:false});
+    const { data, error}=await supabase.from('comunicados').select('*').order('id',{ascending:false}).limit(50);
     if(error) throw error;
     const div=document.getElementById('listaComunicados');
     if(!data||data.length===0){ div.innerHTML='<p>Sem comunicados.</p>'; return; }
     let html='<ul>';
-    data.forEach(c=>{
-      html+=`<li><strong>${escapeHtml(c.titulo)}</strong>: ${escapeHtml(c.mensagem)}</li>`;
-    });
+    data.forEach(c=>html+=`<li><strong>${escapeHtml(c.titulo)}</strong> (${c.data})<br>${escapeHtml(c.mensagem)}</li>`);
     html+='</ul>';
     div.innerHTML=html;
-  }catch(e){ console.error(e); document.getElementById('listaComunicados').innerHTML='<p>Erro ao carregar comunicados.</p>'; }
+
+  }catch(e){ console.error(e); div.innerHTML='<p>Erro ao carregar comunicados.</p>'; }
 }
 
-/* ---------- UTIL ---------- */
+/* ---------- ESCAPE HTML ---------- */
 function escapeHtml(text){
   if(!text) return '';
-  return text.replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
+  return text.replace(/[&<>"']/g,function(m){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m];});
 }
 
-/* ---------- EMAIL SIMULADO ---------- */
+/* ---------- ENVIO EMAIL SIMULADO ---------- */
 function enviarEmail(){
   const email=document.getElementById('emailRemetente').value.trim();
   const assunto=document.getElementById('assuntoEmail').value.trim();
   const mensagem=document.getElementById('mensagemEmail').value.trim();
-  if(!email||!assunto||!mensagem){ alert('Preencha todos os campos.'); return; }
-  alert('Mensagem simulada enviada!\n\n'+`De: ${email}\nAssunto: ${assunto}\nMensagem: ${mensagem}`);
+  if(!email||!assunto||!mensagem){ alert('Preencha todos os campos'); return; }
+  alert('Email enviado com sucesso (simulação).');
+  document.getElementById('emailForm').reset();
 }
 
-/* ---------- Inicialização ---------- */
-document.addEventListener('DOMContentLoaded', ()=>{
+/* ---------- INICIALIZAÇÃO ---------- */
+document.addEventListener('DOMContentLoaded',()=>{
+  showSection('home');
   carregarListaDispensas();
   carregarListaRecibos();
   carregarComunicados();
