@@ -121,52 +121,16 @@ footer{background:#000;color:#fff;padding:10px 12px;display:flex;justify-content
               <th>Deslocação (€)</th>
               <th>Diversos (€)</th>
               <th>Total (€)</th>
+              <th>Remover</th>
             </tr>
           </thead>
           <tbody id="tabelaRecibosBody">
-            <tr>
-              <td data-label="Cargo">Árbitro Principal</td>
-              <td data-label="Nome"><input type="text" class="nome"></td>
-              <td data-label="Prémio"><input type="number" class="premio" step="0.01" min="0"></td>
-              <td data-label="Deslocação"><input type="number" class="deslocacao" step="0.01" min="0"></td>
-              <td data-label="Diversos"><input type="number" class="diversos" step="0.01" min="0"></td>
-              <td data-label="Total" class="total">0,00</td>
-            </tr>
-            <tr>
-              <td data-label="Cargo">Árbitro Auxiliar</td>
-              <td data-label="Nome"><input type="text" class="nome"></td>
-              <td data-label="Prémio"><input type="number" class="premio" step="0.01" min="0"></td>
-              <td data-label="Deslocação"><input type="number" class="deslocacao" step="0.01" min="0"></td>
-              <td data-label="Diversos"><input type="number" class="diversos" step="0.01" min="0"></td>
-              <td data-label="Total" class="total">0,00</td>
-            </tr>
-            <tr>
-              <td data-label="Cargo">Marcador</td>
-              <td data-label="Nome"><input type="text" class="nome"></td>
-              <td data-label="Prémio"><input type="number" class="premio" step="0.01" min="0"></td>
-              <td data-label="Deslocação"><input type="number" class="deslocacao" step="0.01" min="0"></td>
-              <td data-label="Diversos"><input type="number" class="diversos" step="0.01" min="0"></td>
-              <td data-label="Total" class="total">0,00</td>
-            </tr>
-            <tr>
-              <td data-label="Cargo">Cronometrista</td>
-              <td data-label="Nome"><input type="text" class="nome"></td>
-              <td data-label="Prémio"><input type="number" class="premio" step="0.01" min="0"></td>
-              <td data-label="Deslocação"><input type="number" class="deslocacao" step="0.01" min="0"></td>
-              <td data-label="Diversos"><input type="number" class="diversos" step="0.01" min="0"></td>
-              <td data-label="Total" class="total">0,00</td>
-            </tr>
-            <tr>
-              <td data-label="Cargo">Operador 24´</td>
-              <td data-label="Nome"><input type="text" class="nome"></td>
-              <td data-label="Prémio"><input type="number" class="premio" step="0.01" min="0"></td>
-              <td data-label="Deslocação"><input type="number" class="deslocacao" step="0.01" min="0"></td>
-              <td data-label="Diversos"><input type="number" class="diversos" step="0.01" min="0"></td>
-              <td data-label="Total" class="total">0,00</td>
-            </tr>
+            <!-- Linhas adicionadas dinamicamente -->
           </tbody>
         </table>
       </div>
+
+      <button type="button" onclick="adicionarArbitro()">Adicionar Membro</button>
 
       <h3>Total Geral (€): <span id="totalGeral">0,00</span></h3>
       <label>Upload Recibo (PDF ou Imagem)</label>
@@ -226,6 +190,12 @@ function showSection(id){
   if(id==='recibos') carregarListaRecibos();
 }
 
+/* ---------- Escape HTML ---------- */
+function escapeHtml(text){
+  if(!text) return '';
+  return text.replace(/[&<>"']/g,function(m){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m];});
+}
+
 /* ---------- Totais ---------- */
 function atualizarTotais(){
   let totalGeral=0;
@@ -241,7 +211,7 @@ function atualizarTotais(){
 }
 
 document.addEventListener('input',(e)=>{
-  if(e.target.matches('#tabelaRecibosBody input')){
+  if(e.target.closest('#tabelaRecibosBody input')){
     atualizarTotais();
   }
 });
@@ -255,7 +225,7 @@ async function enviarDispensa(){
   const motivo=document.getElementById('motivo').value.trim();
   if(!nome||!dataInicio||!dataFim){ alert('Preencha os campos obrigatórios.'); return; }
   if(new Date(dataFim)<new Date(dataInicio)){ alert('Data final não pode ser anterior à inicial.'); return; }
-  const { error }=await supabaseClient.from('dispensas').insert([{nome,data_inicio:dataInicio,data_fim:dataFim,periodo,motivo}]);
+  const { error}=await supabaseClient.from('dispensas').insert([{nome,data_inicio:dataInicio,data_fim:dataFim,periodo,motivo}]);
   if(error){ console.error(error); alert('Erro: '+error.message); return; }
   alert('Dispensa enviada com sucesso!');
   document.getElementById('dispensaForm').reset();
@@ -276,6 +246,63 @@ async function carregarListaDispensas(){
 }
 
 /* ---------- RECIBOS ---------- */
+const cargosDisponiveis = ["Árbitro Principal","Árbitro Auxiliar","Marcador","Cronometrista","Operador 24´"];
+
+function adicionarArbitro(){
+  const tbody = document.getElementById('tabelaRecibosBody');
+  const tr = document.createElement('tr');
+
+  const tdCargo = document.createElement('td');
+  const select = document.createElement('select');
+  cargosDisponiveis.forEach(cargo=>{
+    const option = document.createElement('option');
+    option.value = cargo;
+    option.textContent = cargo;
+    select.appendChild(option);
+  });
+  tdCargo.appendChild(select);
+  tr.appendChild(tdCargo);
+
+  const tdNome = document.createElement('td');
+  const inputNome = document.createElement('input');
+  inputNome.type = 'text';
+  inputNome.className = 'nome';
+  tdNome.appendChild(inputNome);
+  tdNome.setAttribute('data-label','Nome');
+  tr.appendChild(tdNome);
+
+  ["premio","deslocacao","diversos"].forEach(classe=>{
+    const td = document.createElement('td');
+    td.setAttribute('data-label',classe.charAt(0).toUpperCase()+classe.slice(1)+' (€)');
+    const input = document.createElement('input');
+    input.type = 'number';
+    input.min = '0';
+    input.step = '0.01';
+    input.className = classe;
+    td.appendChild(input);
+    tr.appendChild(td);
+  });
+
+  const tdTotal = document.createElement('td');
+  tdTotal.className = 'total';
+  tdTotal.textContent = '0,00';
+  tdTotal.setAttribute('data-label','Total (€)');
+  tr.appendChild(tdTotal);
+
+  const tdRemover = document.createElement('td');
+  const btn = document.createElement('button');
+  btn.type = 'button';
+  btn.className = 'btn-remover';
+  btn.textContent = 'X';
+  btn.onclick = () => { tr.remove(); atualizarTotais(); };
+  tdRemover.appendChild(btn);
+  tdRemover.setAttribute('data-label','Remover');
+  tr.appendChild(tdRemover);
+
+  tbody.appendChild(tr);
+  atualizarTotais();
+}
+
 async function enviarRecibo(){
   const numeroJogo=document.getElementById('numeroJogo').value.trim();
   if(!numeroJogo){ alert('Insira o número do jogo.'); return; }
@@ -291,7 +318,7 @@ async function enviarRecibo(){
     const diversos=parseFloat((r.querySelector('.diversos').value||0).toString().replace(',', '.'))||0;
     const total=premio+desloc+diversos;
     if(nome!==''){
-      arbitros.push({cargo:r.children[0].innerText,nome,premio,desloc,diversos,total});
+      arbitros.push({cargo:r.querySelector('select').value,nome,premio,desloc,diversos,total});
       totalGeral+=total;
     }
   });
@@ -314,6 +341,7 @@ async function enviarRecibo(){
 
   alert('Recibo enviado com sucesso!');
   document.getElementById('reciboForm').reset();
+  document.getElementById('tabelaRecibosBody').innerHTML = '';
   atualizarTotais();
   carregarListaRecibos();
 }
@@ -328,57 +356,21 @@ async function carregarListaRecibos(){
     let html='';
     data.forEach(r=>{
       html+=`<div style="border:1px solid #ccc;padding:6px;margin:6px 0;border-radius:6px">
-        <strong>Jogo Nº:</strong> ${r.numero_jogo} | <strong>Total Geral:</strong> ${r.total_geral.toFixed(2).replace('.',',')} €
-        ${r.ficheiro?` | <a href="${r.ficheiro}" target="_blank">Ver Ficheiro</a>`:''}
-        <ul>${r.arbitros.map(a=>`<li>${escapeHtml(a.cargo)}: ${escapeHtml(a.nome)} | Total: ${a.total.toFixed(2).replace('.',',')} €</li>`).join('')}</ul>
-      </div>`;
+        <strong>Jogo Nº:</strong> ${escapeHtml(r.numero_jogo)} | <strong>Total:</strong> ${r.total_geral.toFixed(2).replace('.',',')} €<br>`;
+      if(r.arbitros) r.arbitros.forEach(a=>{
+        html+=`- ${escapeHtml(a.cargo)}: ${escapeHtml(a.nome)}, Total: ${a.total.toFixed(2).replace('.',',')} €<br>`;
+      });
+      if(r.ficheiro) html+=`<a href="${r.ficheiro}" target="_blank">Ver Recibo</a>`;
+      html+='</div>';
     });
     div.innerHTML=html;
-
   }catch(e){ console.error(e); document.getElementById('listaRecibos').innerHTML='<p>Erro ao carregar recibos.</p>'; }
 }
 
-/* ---------- COMUNICADOS ---------- */
-async function carregarComunicados(){
-  try{
-    const { data, error } = await supabaseClient.from('comunicados').select('*').order('id',{ascending:false}).limit(50);
-    if(error) throw error;
-    const div=document.getElementById('listaComunicados');
-    if(!data || data.length===0){ div.innerHTML='<p>Sem comunicados.</p>'; return; }
+/* ---------- EMAIL ---------- */
+function enviarEmail(){ alert('Função de envio de email ainda não implementada.'); }
 
-    let html='<ul>';
-    data.forEach(c => html+=`<li><strong>${escapeHtml(c.titulo)}</strong> (${c.data})<br>${escapeHtml(c.mensagem)}</li>`);
-    html+='</ul>';
-    div.innerHTML=html;
-
-  }catch(e){ console.error(e); document.getElementById('listaComunicados').innerHTML='<p>Erro ao carregar comunicados.</p>'; }
-}
-
-/* ---------- ESCAPE HTML ---------- */
-function escapeHtml(text){
-  if(!text) return '';
-  return text.replace(/[&<>"']/g,function(m){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m];});
-}
-
-/* ---------- ENVIO EMAIL SIMULADO ---------- */
-function enviarEmail(){
-  const email=document.getElementById('emailRemetente').value.trim();
-  const assunto=document.getElementById('assuntoEmail').value.trim();
-  const mensagem=document.getElementById('mensagemEmail').value.trim();
-  if(!email || !assunto || !mensagem){ alert('Preencha todos os campos'); return; }
-  alert('Email enviado com sucesso (simulação).');
-  document.getElementById('emailForm').reset();
-}
-
-/* ---------- INICIALIZAÇÃO ---------- */
-document.addEventListener('DOMContentLoaded',()=>{
-  showSection('home');
-  carregarListaDispensas();
-  carregarListaRecibos();
-  carregarComunicados();
-});
 </script>
 
 </body>
 </html>
-
