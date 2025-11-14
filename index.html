@@ -1,431 +1,455 @@
 <!DOCTYPE html>
 <html lang="pt">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>CAD ABVC - Conselho de Arbitragem de Viana do Castelo</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CAD ABVC - Conselho de Arbitragem</title>
 
-<!-- estilo simples e responsivo -->
+<!-- SUPABASE -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.28.0/dist/supabase.min.js"></script>
+
 <style>
-  :root{--accent:#002b5c;--muted:#f2f2f2}
-  body{margin:0;font-family:Arial,Helvetica,sans-serif;background:#fff;color:#000;line-height:1.4}
-  header{background:var(--accent);color:#fff;padding:10px 12px;text-align:center}
-  header h1{margin:0;font-size:1.1rem}
-  nav{display:flex;gap:.25rem;justify-content:center;background:#444;flex-wrap:wrap;padding:6px}
-  nav a{color:#fff;text-decoration:none;font-weight:600;padding:.5rem .8rem;border-radius:4px}
-  nav a:hover{background:#555}
-  .container{max-width:1000px;margin:16px auto;padding:0 12px}
-  .home-img{width:100%;height:auto;display:block;border-radius:6px}
-  section{display:none;padding:12px 0}
-  section.active{display:block}
-  form{background:var(--muted);padding:12px;border-radius:8px;margin-bottom:12px}
-  label{display:block;font-weight:600;margin-top:8px}
-  input[type="text"], input[type="date"], input[type="email"], input[type="number"], select, textarea{width:100%;padding:8px;border:1px solid #ccc;border-radius:6px;box-sizing:border-box;margin-top:6px}
-  textarea{min-height:80px;resize:vertical}
-  button{background:var(--accent);color:#fff;border:none;padding:10px 14px;border-radius:6px;cursor:pointer;margin-top:10px}
-  button.secondary{background:#666}
-  table{width:100%;border-collapse:collapse;margin-top:8px}
-  th,td{border:1px solid #ddd;padding:8px;text-align:center;word-break:break-word}
-  .total{font-weight:700}
-  footer{background:#333;color:#fff;padding:10px 12px;font-size:0.9rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap}
-  a.footer-link{color:#fff;text-decoration:none}
-  /* mobile friendliness */
-  @media(max-width:760px){
-    nav{padding:8px;gap:.5rem}
-    nav a{padding:.5rem .6rem;font-size:0.95rem}
-    th,td{font-size:14px;padding:6px}
-    header h1{font-size:1rem}
-  }
-  /* horizontal scroll for wide tables */
-  .table-wrap{overflow-x:auto}
-</style>
+:root{
+    --accent:#000; /* header preto */
+}
 
-<!-- supabase -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+body{
+    margin:0;
+    font-family: Arial, sans-serif;
+    background:#fff;
+    color:#000;
+}
+
+/* HEADER */
+header{
+    background:var(--accent);
+    padding:10px;
+    text-align:center;
+}
+header img{
+    max-width:200px;
+    height:auto;
+}
+
+/* MENU */
+nav{
+    display:flex;
+    justify-content:center;
+    gap:1rem;
+    background:#222;
+    flex-wrap:wrap;
+}
+nav a{
+    color:#fff;
+    text-decoration:none;
+    padding:1rem;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+/* SEÇÕES */
+section{
+    display:none;
+    padding:1rem;
+}
+section.active{
+    display:block;
+}
+
+/* HOME FOTO */
+.home-img{
+    width:100%;
+    max-height:none;
+    object-fit:contain;
+    margin-top:10px;
+}
+
+/* FORM */
+form{
+    background:#f8f8f8;
+    padding:1rem;
+    border-radius:8px;
+    margin-bottom:1rem;
+}
+label{ display:block; margin-top:0.5rem; }
+input,select,textarea{
+    width:100%;
+    padding:0.5rem;
+    margin-top:0.3rem;
+}
+button{
+    margin-top:0.7rem;
+    padding:0.7rem 1rem;
+    background:var(--accent);
+    color:white;
+    border:none;
+    cursor:pointer;
+    font-weight:bold;
+}
+
+/* TABELAS */
+table{
+    width:100%;
+    border-collapse:collapse;
+}
+th,td{
+    border:1px solid #ccc;
+    padding:0.5rem;
+    text-align:center;
+}
+.total{ font-weight:bold; }
+
+/* FOOTER */
+footer{
+    background:#000;
+    color:#fff;
+    padding:0.7rem;
+    display:flex;
+    justify-content:space-between;
+    font-size:0.9rem;
+}
+footer a{ color:#fff; text-decoration:none; }
+
+/* MOBILE */
+@media(max-width:600px){
+    nav{ flex-direction:column; }
+    table, thead, tbody, th, td, tr{
+        display:block;
+    }
+    tr{
+        margin-bottom:12px;
+        border:1px solid #ddd;
+    }
+    td{
+        border:none;
+        text-align:left;
+        padding-left:45%;
+        position:relative;
+    }
+    td::before{
+        content:attr(data-label);
+        position:absolute;
+        left:0;
+        width:40%;
+        padding-left:10px;
+        font-weight:bold;
+    }
+}
+</style>
 </head>
+
 <body>
+
 <header>
-  <h1>CAD ABVC — Conselho de Arbitragem Distrital de Viana do Castelo</h1>
+    <img src="abvc_cad.png">
 </header>
 
 <nav>
-  <a href="#" onclick="showSection('home')">Home</a>
-  <a href="#" onclick="showSection('dispensas')">Dispensas</a>
-  <a href="#" onclick="showSection('recibos')">Recibos</a>
-  <a href="#" onclick="showSection('comunicados')">Comunicados</a>
-  <a href="#" onclick="showSection('calendario')">Calendário ABVC</a>
-  <a href="#" onclick="showSection('contactos')">Contactos</a>
+<a onclick="showSection('home')">Home</a>
+<a onclick="showSection('dispensas')">Dispensas</a>
+<a onclick="showSection('recibos')">Recibos</a>
+<a onclick="showSection('comunicados')">Comunicados</a>
+<a onclick="showSection('calendario')">Calendário ABVC</a>
+<a onclick="showSection('contactos')">Contactos</a>
 </nav>
 
-<div class="container">
-  <!-- HOME -->
-  <section id="home" class="active">
-    <img src="abvc_cad.png" alt="CAD ABVC" class="home-img">
+<!-- HOME -->
+<section id="home" class="active">
+    <img src="abvc_cad.png" class="home-img">
     <h2>Bem-vindo ao CAD da ABVC</h2>
-  </section>
+</section>
 
-  <!-- DISPENSAS (com data de inicio e fim) -->
-  <section id="dispensas">
-    <h2>Registo de Dispensas</h2>
-    <form id="dispensaForm">
-      <label>Nome:</label>
-      <input type="text" id="nomeDispensa" required>
+<!-- DISPENSAS -->
+<section id="dispensas">
+<h2>Registo de Dispensas</h2>
 
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
-        <div>
-          <label>Data Inicial:</label>
-          <input type="date" id="dataInicioDispensa" required>
-        </div>
-        <div>
-          <label>Data Final:</label>
-          <input type="date" id="dataFimDispensa" required>
-        </div>
-      </div>
+<form id="dispensaForm">
+<label>Nome:</label>
+<input type="text" id="nomeDispensa" required>
 
-      <label>Período:</label>
-      <select id="periodoDispensa" required>
-        <option value="Integral">Integral</option>
-        <option value="Manhã">Parte da Manhã</option>
-        <option value="Tarde">Parte da Tarde</option>
-        <option value="Noite">Parte da Noite</option>
-      </select>
+<label>Data Inicial:</label>
+<input type="date" id="dataInicio" required>
 
-      <label>Motivo (opcional):</label>
-      <textarea id="motivoDispensa" placeholder="Motivo (opcional)"></textarea>
+<label>Data Final:</label>
+<input type="date" id="dataFim" required>
 
-      <button type="button" onclick="enviarDispensa()">Enviar Dispensa</button>
-    </form>
+<label>Período:</label>
+<select id="periodo" required>
+    <option value="Integral">Integral</option>
+    <option value="Manhã">Parte da Manhã</option>
+    <option value="Tarde">Parte da Tarde</option>
+    <option value="Noite">Parte da Noite</option>
+</select>
 
-    <div id="listaDispensas">
-      <!-- será preenchido dinamicamente -->
-    </div>
-  </section>
+<label>Motivo:</label>
+<textarea id="motivo"></textarea>
 
-  <!-- RECIBOS -->
-  <section id="recibos">
-    <h2>Submissão de Recibos</h2>
-    <form id="reciboForm">
-      <label>Nº do Jogo:</label>
-      <input type="text" id="numeroJogo" required>
+<button type="button" onclick="enviarDispensa()">Enviar Dispensa</button>
+</form>
 
-      <div class="table-wrap">
-        <table id="recibosTable">
-          <thead>
-            <tr><th>Cargo</th><th>Nome</th><th>Prémio (€)</th><th>Deslocação (€)</th><th>Diversos (€)</th><th>Total (€)</th></tr>
-          </thead>
-          <tbody id="recibosBody">
-            <tr>
-              <td>Árbitro Principal</td>
-              <td><input type="text" class="nome" /></td>
-              <td><input type="number" step="0.01" class="premio" /></td>
-              <td><input type="number" step="0.01" class="deslocacao" /></td>
-              <td><input type="number" step="0.01" class="diversos" /></td>
-              <td class="total">0,00</td>
-            </tr>
-            <tr>
-              <td>Árbitro Auxiliar</td>
-              <td><input type="text" class="nome" /></td>
-              <td><input type="number" step="0.01" class="premio" /></td>
-              <td><input type="number" step="0.01" class="deslocacao" /></td>
-              <td><input type="number" step="0.01" class="diversos" /></td>
-              <td class="total">0,00</td>
-            </tr>
-            <tr>
-              <td>Marcador</td>
-              <td><input type="text" class="nome" /></td>
-              <td><input type="number" step="0.01" class="premio" /></td>
-              <td><input type="number" step="0.01" class="deslocacao" /></td>
-              <td><input type="number" step="0.01" class="diversos" /></td>
-              <td class="total">0,00</td>
-            </tr>
-            <tr>
-              <td>Operador 24"</td>
-              <td><input type="text" class="nome" /></td>
-              <td><input type="number" step="0.01" class="premio" /></td>
-              <td><input type="number" step="0.01" class="deslocacao" /></td>
-              <td><input type="number" step="0.01" class="diversos" /></td>
-              <td class="total">0,00</td>
-            </tr>
-            <tr>
-              <td>Cronometrista</td>
-              <td><input type="text" class="nome" /></td>
-              <td><input type="number" step="0.01" class="premio" /></td>
-              <td><input type="number" step="0.01" class="deslocacao" /></td>
-              <td><input type="number" step="0.01" class="diversos" /></td>
-              <td class="total">0,00</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+<div id="listaDispensas"></div>
+</section>
+<!-- RECIBOS -->
+<section id="recibos">
+<h2>Submissão de Recibos</h2>
 
-      <h3>Total Geral (€): <span id="totalGeral">0,00</span></h3>
+<form id="reciboForm">
+<label>Nº do Jogo:</label>
+<input type="text" id="numeroJogo" required>
 
-      <label>Upload Recibo (PDF ou Imagem):</label>
-      <input type="file" id="ficheiroRecibo" accept="image/*,.pdf" />
+<table>
+<thead>
+<tr>
+<th>Cargo</th>
+<th>Nome</th>
+<th>Prémio (€)</th>
+<th>Deslocação (€)</th>
+<th>Diversos (€)</th>
+<th>Total (€)</th>
+</tr>
+</thead>
 
-      <button type="button" onclick="enviarRecibo()">Enviar Recibo</button>
-    </form>
+<tbody id="tabelaRecibos">
+<tr>
+<td data-label="Cargo">Árbitro Principal</td>
+<td data-label="Nome"><input type="text" class="nome"></td>
+<td data-label="Prémio"><input type="text" class="premio"></td>
+<td data-label="Deslocação"><input type="text" class="deslocacao"></td>
+<td data-label="Diversos"><input type="text" class="diversos"></td>
+<td data-label="Total" class="total">0,00</td>
+</tr>
 
-    <div id="listaRecibos">
-      <!-- será preenchido dinamicamente -->
-    </div>
-  </section>
+<tr>
+<td data-label="Cargo">Árbitro Auxiliar</td>
+<td><input type="text" class="nome"></td>
+<td><input type="text" class="premio"></td>
+<td><input type="text" class="deslocacao"></td>
+td><input type="text" class="diversos"></td>
+<td class="total">0,00</td>
+</tr>
 
-  <!-- COMUNICADOS -->
-  <section id="comunicados">
-    <h2>Comunicados</h2>
-    <div id="listaComunicados"></div>
-  </section>
+<tr>
+<td data-label="Cargo">Marcador</td>
+<td><input type="text" class="nome"></td>
+<td><input type="text" class="premio"></td>
+<td><input type="text" class="deslocacao"></td>
+<td><input type="text" class="diversos"></td>
+<td class="total">0,00</td>
+</tr>
 
-  <!-- CALENDÁRIO -->
-  <section id="calendario">
-    <h2>Calendário ABVC</h2>
-    <iframe src="https://www.fpb.pt/calendario/associacao_17/?associacao=17&epoca=2025/2026" style="width:100%;height:600px;border:none"></iframe>
-  </section>
+<tr>
+<td data-label="Cargo">Operador 24"</td>
+<td><input type="text" class="nome"></td>
+<td><input type="text" class="premio"></td>
+<td><input type="text" class="deslocacao"></td>
+<td><input type="text" class="diversos"></td>
+<td class="total">0,00</td>
+</tr>
 
-  <!-- CONTACTOS -->
-  <section id="contactos">
-    <h2>Contactos</h2>
-    <p><a href="https://wa.me/351926166077" target="_blank">Enviar WhatsApp</a></p>
-    <form id="emailForm">
-      <label>Seu Email:</label>
-      <input type="email" id="emailRemetente">
-      <label>Assunto:</label>
-      <input type="text" id="assuntoEmail">
-      <label>Mensagem:</label>
-      <textarea id="mensagemEmail"></textarea>
-      <button type="button" onclick="enviarEmail()">Enviar Email</button>
-    </form>
-  </section>
-</div>
+<tr>
+<td data-label="Cargo">Cronometrista</td>
+<td><input type="text" class="nome"></td>
+<td><input type="text" class="premio"></td>
+<td><input type="text" class="deslocacao"></td>
+<td><input type="text" class="diversos"></td>
+<td class="total">0,00</td>
+</tr>
+</tbody>
+</table>
+
+<h3>Total Geral (€): <span id="totalGeral">0,00</span></h3>
+
+<label>Upload Recibo (PDF ou Imagem):</label>
+<input type="file" id="ficheiroRecibo" accept=".jpg,.png,.jpeg,.pdf">
+
+<button type="button" onclick="enviarRecibo()">Enviar Recibo</button>
+</form>
+
+</section>
+
+<!-- COMUNICADOS -->
+<section id="comunicados">
+<h2>Comunicados</h2>
+<div id="listaComunicados">Em breve...</div>
+</section>
+
+<!-- CALENDÁRIO -->
+<section id="calendario">
+<h2>Calendário ABVC</h2>
+<iframe src="https://www.fpb.pt/calendario/associacao_17/?associacao=17&epoca=2025/2026"
+style="width:100%;height:600px;border:none;"></iframe>
+</section>
+
+<!-- CONTACTOS -->
+<section id="contactos">
+<h2>Contactos</h2>
+
+<p><a href="https://wa.me/351926166077" target="_blank">📞 Enviar WhatsApp</a></p>
+
+<form id="emailForm">
+<label>Seu Email:</label>
+<input type="email" id="emailRemetente">
+
+<label>Assunto:</label>
+<input type="text" id="assuntoEmail">
+
+<label>Mensagem:</label>
+<textarea id="mensagemEmail"></textarea>
+
+<button type="button" onclick="enviarEmail()">Enviar Email</button>
+</form>
+</section>
 
 <footer>
-  <span>R. Conselheiro Arnaldo Norton de Matos 31, 4990-081 Pte. de Lima</span>
-  <span><a class="footer-link" href="admin.html">Admin</a></span>
+<span>R. Conselheiro Arnaldo Norton de Matos 31, 4990-081 Pte. de Lima</span>
+<span><a href="admin.html">Admin</a></span>
 </footer>
 
-<!-- script: lógica, supabase e listeners -->
 <script>
-  // Supabase config (já com as tuas keys)
-  const SUPABASE_URL = 'https://prwhifyewscielsopluj.supabase.co';
-  const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InByd2hpZnlld3NjaWVsc29wbHVqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjMwMzA2MzEsImV4cCI6MjA3ODYwNjYzMX0.N8Op_2iUwRFd71YTninoztaInQtVLEnVIwbi2nIHkKg';
-  const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+// ----------------------------
+// CONFIG SUPABASE
+// ----------------------------
+const supabaseUrl = "https://prwhifyewscielsopluj.supabase.co";
+const supabaseKey =
+"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InByd2hpZnlld3NjaWVsc29wbHVqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjMwMzA2MzEsImV4cCI6MjA3ODYwNjYzMX0.N8Op_2iUwRFd71YTninoztaInQtVLEnVIwbi2nIHkKg";
 
-  // Navegação entre secções
-  function showSection(id){
-    document.querySelectorAll('section').forEach(s=>s.classList.remove('active'));
-    const el = document.getElementById(id);
-    if(el) el.classList.add('active');
-    window.scrollTo({top:0,behavior:'smooth'});
-    // carregar listas quando abrir as secções correspondentes
-    if(id === 'dispensas') carregarListaDispensas();
-    if(id === 'recibos') carregarListaRecibos();
-  }
+const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 
-  // ===== RECIBOS: cálculo e listeners =====
-  function atualizarTotais(){
+// ----------------------------
+// SEÇÕES
+// ----------------------------
+function showSection(id){
+    document.querySelectorAll("section").forEach(s=>s.classList.remove("active"));
+    document.getElementById(id).classList.add("active");
+}
+
+// ----------------------------
+// CÁLCULO DOS RECIBOS
+// ----------------------------
+function atualizarTotais(){
     let totalGeral = 0;
-    const rows = document.querySelectorAll('#recibosBody tr');
-    rows.forEach(r=>{
-      const premioEl = r.querySelector('.premio');
-      const deslocEl = r.querySelector('.deslocacao');
-      const diversosEl = r.querySelector('.diversos');
-      const totalTd = r.querySelector('.total');
 
-      const premio = parseFloat( (premioEl.value || '0').toString().replace(',','.') ) || 0;
-      const desloc = parseFloat( (deslocEl.value || '0').toString().replace(',','.') ) || 0;
-      const diversos = parseFloat( (diversosEl.value || '0').toString().replace(',','.') ) || 0;
-      const total = premio + desloc + diversos;
-      totalTd.textContent = total.toFixed(2).replace('.',',');
-      totalGeral += total;
-    });
-    document.getElementById('totalGeral').textContent = totalGeral.toFixed(2).replace('.',',');
-  }
+    document.querySelectorAll("#tabelaRecibos tr").forEach(row=>{
+        const premio = parseFloat((row.querySelector(".premio")?.value || "0").replace(",", ".")) || 0;
+        const desloc = parseFloat((row.querySelector(".deslocacao")?.value || "0").replace(",", ".")) || 0;
+        const diversos = parseFloat((row.querySelector(".diversos")?.value || "0").replace(",", ".")) || 0;
 
-  // attach listeners após DOM estar pronto
-  document.addEventListener('DOMContentLoaded', ()=>{
-    // add input listeners to table numeric inputs
-    document.querySelectorAll('#recibosBody input[type="number"]').forEach(inp=>{
-      inp.addEventListener('input', atualizarTotais);
-    });
-    // initial totals
-    atualizarTotais();
-    // preload lists
-    carregarListaDispensas();
-    carregarListaRecibos();
-  });
+        const total = premio + desloc + diversos;
 
-  // ===== DISPENSAS: envio e listagem =====
-  async function enviarDispensa(){
-    const nome = document.getElementById('nomeDispensa').value.trim();
-    const dataInicio = document.getElementById('dataInicioDispensa').value;
-    const dataFim = document.getElementById('dataFimDispensa').value;
-    const periodo = document.getElementById('periodoDispensa').value;
-    const motivo = document.getElementById('motivoDispensa').value.trim();
-
-    if(!nome || !dataInicio || !dataFim || !periodo){
-      alert('Preencha os campos obrigatórios.');
-      return;
-    }
-    // validar datas (comparar apenas datas)
-    const dInicio = new Date(dataInicio + 'T00:00:00');
-    const dFim = new Date(dataFim + 'T23:59:59');
-    if(dFim < dInicio){
-      alert('A data final não pode ser anterior à data inicial.');
-      return;
-    }
-
-    // inserir no supabase (tabela: dispensa)
-    const payload = {
-      nome,
-      dataInicio, // yyyy-mm-dd
-      dataFim,
-      periodo,
-      motivo
-    };
-
-    const { error } = await supabase.from('dispensa').insert([payload]);
-    if(error){
-      console.error(error);
-      alert('Erro ao enviar dispensa: ' + error.message);
-    } else {
-      alert('Dispensa enviada com sucesso!');
-      document.getElementById('dispensaForm').reset();
-      carregarListaDispensas();
-      showSection('dispensas');
-    }
-  }
-
-  async function carregarListaDispensas(){
-    // busca últimas 100 dispensa ordenadas por created timestamp (se existir)
-    try{
-      const { data, error } = await supabase.from('dispensa').select('*').order('id',{ascending:false}).limit(100);
-      if(error) throw error;
-      const div = document.getElementById('listaDispensas');
-      if(!data || data.length===0){ div.innerHTML = '<p>Sem dispensas registadas.</p>'; return; }
-      let html = '<div class="table-wrap"><table><thead><tr><th>Nome</th><th>Início</th><th>Fim</th><th>Período</th><th>Motivo</th></tr></thead><tbody>';
-      data.forEach(d=>{
-        html += `<tr><td>${escapeHtml(d.nome)}</td><td>${d.dataInicio || ''}</td><td>${d.dataFim || ''}</td><td>${escapeHtml(d.periodo||'')}</td><td>${escapeHtml(d.motivo||'')}</td></tr>`;
-      });
-      html += '</tbody></table></div>';
-      div.innerHTML = html;
-    }catch(err){
-      console.error(err);
-      document.getElementById('listaDispensas').innerHTML = '<p>Erro ao carregar dispensas.</p>';
-    }
-  }
-
-  // ===== RECIBOS: envio e listagem =====
-  async function enviarRecibo(){
-    const numeroJogo = document.getElementById('numeroJogo').value.trim();
-    if(!numeroJogo){ alert('Preencha o número do jogo.'); return; }
-
-    // recolher árbitros e calcular total geral
-    const rows = [...document.querySelectorAll('#recibosBody tr')];
-    const arbitros = [];
-    let totalGeral = 0;
-    rows.forEach(r=>{
-      const nome = (r.querySelector('.nome').value || '').trim();
-      const premio = parseFloat( (r.querySelector('.premio').value || '0').toString().replace(',','.') ) || 0;
-      const desloc = parseFloat( (r.querySelector('.deslocacao').value || '0').toString().replace(',','.') ) || 0;
-      const diversos = parseFloat( (r.querySelector('.diversos').value || '0').toString().replace(',','.') ) || 0;
-      const total = premio + desloc + diversos;
-      if(nome !== '') {
-        arbitros.push({ cargo: r.cells[0].innerText, nome, premio, desloc, diversos, total });
+        if(row.querySelector(".total")){
+            row.querySelector(".total").textContent = total.toFixed(2).replace(".", ",");
+        }
         totalGeral += total;
-      }
     });
 
-    if(arbitros.length === 0){
-      alert('Preencha pelo menos um nome de árbitro.');
-      return;
+    document.getElementById("totalGeral").textContent =
+        totalGeral.toFixed(2).replace(".", ",");
+}
+
+// EVENTOS DE INPUT
+document.querySelectorAll(".premio, .deslocacao, .diversos").forEach(inp=>{
+    inp.addEventListener("input", atualizarTotais);
+});
+
+// ----------------------------
+// ENVIAR DISPENSA
+// ----------------------------
+async function enviarDispensa(){
+    const nome = document.getElementById("nomeDispensa").value;
+    const dataInicio = document.getElementById("dataInicio").value;
+    const dataFim = document.getElementById("dataFim").value;
+    const periodo = document.getElementById("periodo").value;
+    const motivo = document.getElementById("motivo").value;
+
+    if(!nome || !dataInicio || !dataFim){
+        alert("Preencha todos os campos obrigatórios.");
+        return;
     }
 
-    // upload ficheiro se houver
-    const ficheiro = document.getElementById('ficheiroRecibo').files[0];
+    const { error } = await supabaseClient.from("dispensas").insert([{
+        nome, data_inicio: dataInicio, data_fim: dataFim, periodo, motivo
+    }]);
+
+    if(error){
+        alert("Erro ao enviar: " + error.message);
+        return;
+    }
+
+    alert("Dispensa enviada com sucesso!");
+    document.getElementById("dispensaForm").reset();
+}
+
+// ----------------------------
+// ENVIAR RECIBO
+// ----------------------------
+async function enviarRecibo(){
+    const numeroJogo = document.getElementById("numeroJogo").value;
+
+    if(!numeroJogo){
+        alert("Insira o número do jogo.");
+        return;
+    }
+
+    const linhas = document.querySelectorAll("#tabelaRecibos tr");
+
+    const arbitros = [...linhas].map(l=>({
+        cargo: l.children[0].innerText,
+        nome: l.querySelector(".nome").value,
+        premio: l.querySelector(".premio").value,
+        deslocacao: l.querySelector(".deslocacao").value,
+        diversos: l.querySelector(".diversos").value,
+        total: l.querySelector(".total").innerText,
+    }));
+
+    // Upload ficheiro
     let ficheiroUrl = null;
-    try {
-      if(ficheiro){
-        // cria nome único
-        const timestamp = Date.now();
-        const safeName = `${timestamp}_${ficheiro.name.replace(/\s+/g,'_')}`;
-        const { data: upData, error: upErr } = await supabase.storage.from('recibos').upload(`public/${safeName}`, ficheiro, {upsert: false});
-        if(upErr){
-          console.error(upErr);
-          alert('Erro a subir ficheiro: ' + upErr.message);
-          return;
-        }
-        const { data: urlData } = await supabase.storage.from('recibos').getPublicUrl(`public/${safeName}`);
-        ficheiroUrl = urlData?.publicUrl || null;
-      }
+    const ficheiro = document.getElementById("ficheiroRecibo").files[0];
 
-      // gravar recibo (uma linha que contém numero_jogo, arbitros json e total)
-      const payload = {
+    if(ficheiro){
+        const path = `public/${Date.now()}_${ficheiro.name}`;
+
+        const { error: uploadErr } = await supabaseClient
+            .storage.from("recibos")
+            .upload(path, ficheiro);
+
+        if(uploadErr){
+            alert("Erro no upload: " + uploadErr.message);
+            return;
+        }
+
+        const { data } = supabaseClient.storage.from("recibos").getPublicUrl(path);
+        ficheiroUrl = data.publicUrl;
+    }
+
+    const { error } = await supabaseClient.from("recibos").insert([{
         numero_jogo: numeroJogo,
-        arbitros: arbitros,
-        total: totalGeral,
-        ficheiroUrl: ficheiroUrl
-      };
-      const { error } = await supabase.from('recibos').insert([payload]);
-      if(error){
-        console.error(error);
-        alert('Erro ao enviar recibo: ' + error.message);
-      } else {
-        alert('Recibo enviado com sucesso!');
-        document.getElementById('reciboForm').reset();
-        // reset totals display
-        rows.forEach(r => r.querySelector('.total').textContent = '0,00');
-        document.getElementById('totalGeral').textContent = '0,00';
-        carregarListaRecibos();
-        showSection('recibos');
-      }
-    } catch(e){
-      console.error(e);
-      alert('Erro inesperado: ' + e.message);
+        arbitros,
+        ficheiro_url: ficheiroUrl
+    }]);
+
+    if(error){
+        alert("Erro ao enviar: " + error.message);
+        return;
     }
-  }
 
-  async function carregarListaRecibos(){
-    try{
-      const { data, error } = await supabase.from('recibos').select('*').order('id',{ascending:false}).limit(200);
-      if(error) throw error;
-      const div = document.getElementById('listaRecibos');
-      if(!data || data.length === 0){ div.innerHTML = '<p>Sem recibos submetidos.</p>'; return; }
-      let html = '';
-      data.forEach(r=>{
-        html += `<div style="border:1px solid #ddd;padding:10px;border-radius:6px;margin-bottom:8px">
-          <p><strong>Nº Jogo:</strong> ${escapeHtml(r.numero_jogo || '')} <strong style="margin-left:12px">Total:</strong> ${ (r.total!=null) ? Number(r.total).toFixed(2).replace('.',',') : '' } €</p>`;
-        if(r.arbitros && Array.isArray(r.arbitros)){
-          html += '<table style="width:100%;border-collapse:collapse"><thead><tr><th>Cargo</th><th>Nome</th><th>Prémio</th><th>Deslocação</th><th>Diversos</th><th>Total</th></tr></thead><tbody>';
-          r.arbitros.forEach(a=>{
-            html += `<tr><td>${escapeHtml(a.cargo||'')}</td><td>${escapeHtml(a.nome||'')}</td><td>${(a.premio!=null)?Number(a.premio).toFixed(2).replace('.',','):''}</td><td>${(a.desloc!=null)?Number(a.desloc).toFixed(2).replace('.',','):''}</td><td>${(a.diversos!=null)?Number(a.diversos).toFixed(2).replace('.',','):''}</td><td>${(a.total!=null)?Number(a.total).toFixed(2).replace('.',','):''}</td></tr>`;
-          });
-          html += '</tbody></table>';
-        }
-        if(r.ficheiroUrl) html += `<p><a href="${r.ficheiroUrl}" target="_blank">Ver ficheiro</a></p>`;
-        html += `<p style="font-size:0.85rem;color:#666">Submetido em: ${r.criado_em ? new Date(r.criado_em).toLocaleString() : '-'}</p>`;
-        html += `</div>`;
-      });
-      div.innerHTML = html;
-    }catch(err){
-      console.error(err);
-      document.getElementById('listaRecibos').innerHTML = '<p>Erro ao carregar recibos.</p>';
-    }
-  }
+    alert("Recibo enviado com sucesso!");
+    document.getElementById("reciboForm").reset();
+    atualizarTotais();
+}
 
-  // email via mailto
-  function enviarEmail(){
-    const email = document.getElementById('emailRemetente').value || '';
-    const assunto = document.getElementById('assuntoEmail').value || '';
-    const msg = document.getElementById('mensagemEmail').value || '';
-    window.location.href = `mailto:arbitragem.abvc@gmail.com?subject=${encodeURIComponent(assunto)}&body=${encodeURIComponent('De: '+email+'\n\n'+msg)}`;
-  }
+// ----------------------------
+// EMAIL
+// ----------------------------
+function enviarEmail(){
+    const email = document.getElementById("emailRemetente").value;
+    const assunto = document.getElementById("assuntoEmail").value;
+    const msg = document.getElementById("mensagemEmail").value;
 
-  // pequenos helpers
-  function escapeHtml(str){
-    if(!str) return '';
-    return String(str).replace(/[&<>"'`=\/]/g, function(s){ return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;','`':'&#96;','=':'&#61;','/':'&#47;'})[s]; });
-  }
+    window.location.href =
+        `mailto:arbitragem.abvc@gmail.com?subject=${encodeURIComponent(assunto)}&body=${encodeURIComponent("De: "+email+"\n\n"+msg)}`;
+}
+
 </script>
+
 </body>
 </html>
